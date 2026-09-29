@@ -103,7 +103,7 @@ class _AdminStatsScreenState extends State<AdminStatsScreen> {
       return const EmptyState(
         icon: Icons.insights_outlined,
         title: 'No data yet',
-        message: 'Statistics appear once the service has a database to read.',
+        message: 'Statistics appear as soon as there is data to show.',
       );
     }
 
@@ -165,7 +165,7 @@ class _AdminStatsScreenState extends State<AdminStatsScreen> {
           const SizedBox(height: 14),
           Center(
             child: Text(
-              'Aggregated from the service database \u00b7 ${relativeTime(stats.generatedAt)}',
+              'Updated ${relativeTime(stats.generatedAt)}',
               style: Theme.of(context)
                   .textTheme
                   .bodySmall
@@ -252,7 +252,7 @@ class _AdminStatsScreenState extends State<AdminStatsScreen> {
             ),
           if (total == 0)
             const Text(
-              'No stops in the database yet.',
+              'No stops to show yet.',
               style: TextStyle(color: AppTheme.inkFaint, fontSize: 12.5),
             ),
         ],
@@ -316,7 +316,7 @@ class _AdminStatsScreenState extends State<AdminStatsScreen> {
       title: 'By driver',
       child: stats.perDriver.isEmpty
           ? const Text(
-              'No active drivers in the database.',
+              'No active drivers right now.',
               style: TextStyle(color: AppTheme.inkFaint, fontSize: 12.5),
             )
           : Column(

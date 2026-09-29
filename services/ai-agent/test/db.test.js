@@ -4,7 +4,7 @@ import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-import { openDatabase, seedDemoDeliveries } from '../src/data/database.js';
+import { backfillDemoItems, openDatabase, seedDemoDeliveries } from '../src/data/database.js';
 import { createSqliteAuthStore, createSqliteStore } from '../src/data/sqlite_store.js';
 import { seedUsers } from '../src/auth/seed.js';
 import { hashToken } from '../src/auth/middleware.js';
@@ -52,6 +52,46 @@ test('a fresh database is created, migrated and seeded with the demo route', asy
   assert.equal(seedDemoDeliveries(db), false);
   assert.equal((await store.list()).length, 4);
   db.close();
+});
+
+test('every demo delivery describes the goods with a name and a photo', async () => {
+  const db = openDatabase({ path: tempDbPath() });
+  seedDemoDeliveries(db);
+
+  const deliveries = await createSqliteStore(db).list();
+  assert.equal(deliveries.length, 4);
+  for (const delivery of deliveries) {
+    assert.ok(delivery.item, `${delivery.id} must say what is being delivered`);
+    assert.ok(delivery.item.name.trim().length > 0, `${delivery.id} has a name`);
+    assert.ok(delivery.item.category, `${delivery.id} has a category`);
+    assert.match(delivery.item.imageUrl, /^https:\/\//, `${delivery.id} links a remote photo`);
+  }
+
+  assert.equal(deliveries[0].item.name, 'Espresso machine');
+  db.close();
+});
+
+test('a database from before the item column is backfilled on boot', async () => {
+  const file = tempDbPath();
+
+  const firstRun = openDatabase({ path: file });
+  seedDemoDeliveries(firstRun);
+  // Simulate rows written by the previous release: goods never described.
+  firstRun.prepare('UPDATE deliveries SET item_json = NULL').run();
+  assert.equal(
+    Number(firstRun.prepare('SELECT COUNT(*) AS n FROM deliveries WHERE item_json IS NULL').get().n),
+    4,
+  );
+  firstRun.close();
+
+  const reopened = openDatabase({ path: file });
+  assert.equal(backfillDemoItems(reopened), 4);
+  assert.equal(backfillDemoItems(reopened), 0, 'the backfill is idempotent');
+
+  const one = await createSqliteStore(reopened).get('DLV-1043');
+  assert.equal(one.item.name, '46-inch LED TV');
+  assert.equal(one.item.sku, 'SKU-TV-4608');
+  reopened.close();
 });
 
 test('delivery status changes persist across a restart', async () => {

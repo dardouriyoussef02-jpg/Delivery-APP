@@ -15,6 +15,12 @@
       "parcels": 2,
       "codAmount": 24.9,
       "currency": "EUR",
+      "item": {
+        "name": "Espresso machine",
+        "category": "Small appliances",
+        "sku": "SKU-ESP-2201",
+        "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Espresso_machine_1.jpg/960px-Espresso_machine_1.jpg"
+      },
       "address": {
         "line1": "18 Kanalstraat",
         "line2": "Flat 4B, 2nd floor",
@@ -70,6 +76,12 @@
       "parcels": 1,
       "codAmount": 0,
       "currency": "EUR",
+      "item": {
+        "name": "46-inch LED TV",
+        "category": "Electronics",
+        "sku": "SKU-TV-4608",
+        "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/TV_set_%2846_inch%29_in_self-customized_box_for_sending_via_parcel_service_N.1.jpg/960px-TV_set_%2846_inch%29_in_self-customized_box_for_sending_via_parcel_service_N.1.jpg"
+      },
       "address": {
         "line1": "204 Delfshavenseweg",
         "line2": "",
@@ -117,6 +129,12 @@
       "parcels": 3,
       "codAmount": 61.4,
       "currency": "EUR",
+      "item": {
+        "name": "Ergonomic office chair",
+        "category": "Office furniture",
+        "sku": "SKU-OFC-3310",
+        "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/7/7b/ErgoFlip_Active_Ergonomic_Chair_with_2_surfaces.jpg"
+      },
       "address": {
         "line1": "7 Laan van Coolsingen",
         "line2": "Office 1.12",
@@ -163,6 +181,12 @@
       "parcels": 1,
       "codAmount": 12.0,
       "currency": "EUR",
+      "item": {
+        "name": "Running shoes",
+        "category": "Sportswear",
+        "sku": "SKU-SHO-1145",
+        "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/Mizuno_Wave_Ibuki_2.jpg/960px-Mizuno_Wave_Ibuki_2.jpg"
+      },
       "address": {
         "line1": "51 Oranjeboomstraat",
         "line2": "",

@@ -1,3 +1,5 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 
 import '../core/app_theme.dart';
@@ -21,7 +23,7 @@ class SectionCard extends StatelessWidget {
   final EdgeInsetsGeometry padding;
   final VoidCallback? onTap;
 
-  /// Draws a lime tick beside the title - used for "hero" cards.
+  /// Draws an orange tick beside the title for highlighted cards.
   final bool accentBar;
 
   @override
@@ -60,17 +62,23 @@ class SectionCard extends StatelessWidget {
       ),
     );
 
-    return Container(
-      decoration: AppTheme.cardDecoration,
-      child: Material(
-        type: MaterialType.transparency,
-        child: onTap == null
-            ? content
-            : InkWell(
-                onTap: onTap,
-                borderRadius: BorderRadius.circular(20),
-                child: content,
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(24),
+      child: BackdropFilter(
+        filter: ui.ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+        child: Container(
+          decoration: AppTheme.cardDecoration,
+          child: Material(
+            type: MaterialType.transparency,
+            child: onTap == null
+                ? content
+                : InkWell(
+                    onTap: onTap,
+                    borderRadius: BorderRadius.circular(24),
+                    child: content,
+                  ),
               ),
+        ),
       ),
     );
   }

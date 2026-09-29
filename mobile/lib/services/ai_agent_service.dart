@@ -45,7 +45,7 @@ class AiAgentService {
     return payload?['messageId'] as String? ?? '';
   }
 
-  /// Cheap health probe used by Settings to verify the API URL.
+  /// Cheap health probe used by the connection check in Settings.
   Future<({bool ok, String provider, String dataMode})> health() async {
     final data = await _api.get('/health');
     final payload = (data as Map?)?.cast<String, dynamic>();

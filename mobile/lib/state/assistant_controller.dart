@@ -109,7 +109,7 @@ class AssistantController extends ChangeNotifier {
       error = ex.message;
       phase = AssistantPhase.failure;
     } catch (_) {
-      error = 'The assistant is unavailable right now. Check the API URL in Settings.';
+      error = 'The assistant is unavailable right now. Please try again.';
       phase = AssistantPhase.failure;
     }
 

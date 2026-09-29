@@ -5,6 +5,7 @@ import '../core/app_theme.dart';
 import '../core/formatters.dart';
 import '../models/delivery.dart';
 import '../state/deliveries_controller.dart';
+import '../widgets/item_image.dart';
 import '../widgets/section_card.dart';
 import 'delivery_detail_screen.dart';
 import 'home_shell.dart';
@@ -153,6 +154,7 @@ class _RouteTile extends StatelessWidget {
     final theme = Theme.of(context);
     final delivered = delivery.status.isFinished;
     final active = delivery.status == DeliveryStatus.inTransit;
+    final item = delivery.item;
 
     return IntrinsicHeight(
       child: Row(
@@ -211,14 +213,14 @@ class _RouteTile extends StatelessWidget {
           Expanded(
             child: InkWell(
               onTap: onTap,
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(22),
               child: Container(
                 margin: EdgeInsets.only(bottom: isLast ? 0 : 10),
                 padding: const EdgeInsets.all(13),
                 decoration: BoxDecoration(
-                  color: AppTheme.surface,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppTheme.hairline),
+                  color: AppTheme.surface.withValues(alpha: 0.82),
+                  borderRadius: BorderRadius.circular(22),
+                  border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
                   boxShadow: AppTheme.cardShadow,
                 ),
                 child: Row(
@@ -229,6 +231,24 @@ class _RouteTile extends StatelessWidget {
                         children: [
                           Text(delivery.customer.fullName,
                               style: theme.textTheme.titleMedium?.copyWith(fontSize: 15)),
+                          if (item != null) ...[
+                            const SizedBox(height: 3),
+                            Row(
+                              children: [
+                                ItemImage(item: item, width: 30, height: 30, radius: 9, iconSize: 15),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    item.name,
+                                    style: theme.textTheme.bodyMedium
+                                        ?.copyWith(fontWeight: FontWeight.w700),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
                           const SizedBox(height: 2),
                           Text(
                             '${delivery.zone} \u00b7 ${timeOfDay(delivery.eta)} \u00b7 '

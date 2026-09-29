@@ -29,13 +29,14 @@ class SessionController extends ChangeNotifier {
   late final ApiClient api;
   final TokenStore tokens;
 
-  static const _prefsBaseUrl = 'settings.base_url';
   static const _prefsSignedIn = 'session.signed_in';
   static const _prefsEmail = 'session.email';
   static const _prefsAutoSuggest = 'settings.auto_suggest';
   static const _prefsChannel = 'settings.channel';
 
-  String baseUrl = AppConfig.defaultBaseUrl;
+  /// Where the app talks to. Fixed at build time - the endpoint is a build
+  /// setting, never something a device screen edits or displays.
+  final String baseUrl = AppConfig.defaultBaseUrl;
   String driverId = 'DRV-77';
   String driverName = 'Demo Driver';
   String driverEmail = '';
@@ -58,7 +59,6 @@ class SessionController extends ChangeNotifier {
 
   Future<void> bootstrap() async {
     final prefs = await SharedPreferences.getInstance();
-    baseUrl = prefs.getString(_prefsBaseUrl) ?? AppConfig.defaultBaseUrl;
     driverEmail = prefs.getString(_prefsEmail) ?? '';
     autoSuggest = prefs.getBool(_prefsAutoSuggest) ?? true;
     defaultChannel = MessageChannel.fromWire(prefs.getString(_prefsChannel));
@@ -131,7 +131,7 @@ class SessionController extends ChangeNotifier {
       errorMessage = error.statusCode == 401
           ? 'Invalid e-mail or password.'
           : error.offline
-              ? 'Cannot reach the server. Check the API URL in Settings.'
+              ? 'Cannot reach the server right now. Please try again.'
               : error.message;
       busy = false;
       notifyListeners();
@@ -187,7 +187,7 @@ class SessionController extends ChangeNotifier {
       } else if (error.statusCode == 403) {
         errorMessage = 'Registration is disabled on this server.';
       } else if (error.offline) {
-        errorMessage = 'Cannot reach the server. Check the API URL in Settings.';
+        errorMessage = 'Cannot reach the server right now. Please try again.';
       } else {
         errorMessage = error.message;
       }
@@ -253,14 +253,6 @@ class SessionController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> setBaseUrl(String value) async {
-    final trimmed = value.trim().replaceAll(RegExp(r'/+$'), '');
-    baseUrl = trimmed.isEmpty ? AppConfig.defaultBaseUrl : trimmed;
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_prefsBaseUrl, baseUrl);
-    notifyListeners();
-  }
-
   Future<void> setAutoSuggest(bool value) async {
     autoSuggest = value;
     final prefs = await SharedPreferences.getInstance();
@@ -275,16 +267,21 @@ class SessionController extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Verifies the API URL and reports which model/data source is behind it.
+  /// Cheap health probe shown to the driver as a plain connection check.
+  ///
+  /// The answer stays generic on purpose: which model, data source or host
+  /// sits behind the service is backend information and never reaches a screen.
   Future<({bool ok, String message})> testConnection() async {
     try {
       final health = await AiAgentService(api).health();
       return (
         ok: health.ok,
-        message: 'Connected - model: ${health.provider}, data: ${health.dataMode}',
+        message: health.ok
+            ? 'Connected to the delivery service.'
+            : 'The service is not responding yet.',
       );
-    } on ApiException catch (error) {
-      return (ok: false, message: error.message);
+    } on ApiException {
+      return (ok: false, message: 'Cannot reach the delivery service right now.');
     }
   }
 

@@ -142,6 +142,34 @@ class DeliveryEvent {
       );
 }
 
+/// What is actually inside the parcel: shown next to the customer name so the
+/// driver recognises the goods before knocking.
+class DeliveryItem {
+  const DeliveryItem({
+    required this.name,
+    this.imageUrl = '',
+    this.category = '',
+    this.sku = '',
+  });
+
+  final String name;
+  final String imageUrl;
+  final String category;
+  final String sku;
+
+  /// Only remote pictures can be rendered; anything else falls back to an icon.
+  bool get hasImage => imageUrl.startsWith('http');
+
+  bool get hasName => name.trim().isNotEmpty;
+
+  factory DeliveryItem.fromJson(Map<String, dynamic> json) => DeliveryItem(
+        name: json['name'] as String? ?? '',
+        imageUrl: json['imageUrl'] as String? ?? '',
+        category: json['category'] as String? ?? '',
+        sku: json['sku'] as String? ?? '',
+      );
+}
+
 class Delivery {
   const Delivery({
     required this.id,
@@ -161,6 +189,7 @@ class Delivery {
     required this.notes,
     required this.events,
     required this.history,
+    this.item,
   });
 
   final String id;
@@ -180,6 +209,9 @@ class Delivery {
   final List<DeliveryNote> notes;
   final List<DeliveryEvent> events;
   final List<DeliveryEvent> history;
+
+  /// Null when the backend does not describe the goods yet.
+  final DeliveryItem? item;
 
   bool get needsAttention => status == DeliveryStatus.failed || notes.any((note) => !note.fromCustomer);
 
@@ -214,6 +246,7 @@ class Delivery {
         notes: notes,
         events: events ?? this.events,
         history: history,
+        item: item,
       );
 
   factory Delivery.fromJson(Map<String, dynamic> json) => Delivery(
@@ -240,5 +273,8 @@ class Delivery {
         history: ((json['history'] as List?) ?? const [])
             .map((event) => DeliveryEvent.fromJson((event as Map).cast<String, dynamic>()))
             .toList(),
+        item: json['item'] is Map
+            ? DeliveryItem.fromJson((json['item'] as Map).cast<String, dynamic>())
+            : null,
       );
 }

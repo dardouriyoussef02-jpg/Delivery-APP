@@ -264,9 +264,9 @@ class _MapScreenState extends State<MapScreen> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
               decoration: BoxDecoration(
-                color: AppTheme.surface.withValues(alpha: 0.94),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppTheme.hairline),
+                color: AppTheme.surface.withValues(alpha: 0.92),
+                borderRadius: BorderRadius.circular(18),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
               ),
               child: const Row(
                 children: [
@@ -449,9 +449,9 @@ class _StopCard extends StatelessWidget {
       margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppTheme.surface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppTheme.hairline),
+        color: AppTheme.surface.withValues(alpha: 0.90),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
         boxShadow: AppTheme.cardShadow,
       ),
       child: Column(

@@ -75,6 +75,14 @@ export function buildUserPrompt({ delivery, note, heuristicHint }) {
     `Status: ${delivery.status} | parcels: ${delivery.parcels} | COD: ${delivery.codAmount} ${delivery.currency}`,
   ];
 
+  if (delivery.item?.name) {
+    lines.push(
+      `Item: ${delivery.item.name}` +
+        `${delivery.item.category ? ` (${delivery.item.category})` : ''}` +
+        `${delivery.item.sku ? ` ref ${delivery.item.sku}` : ''}`,
+    );
+  }
+
   if (delivery.address.accessHint) {
     lines.push(`Address access hint: ${delivery.address.accessHint}`);
   }

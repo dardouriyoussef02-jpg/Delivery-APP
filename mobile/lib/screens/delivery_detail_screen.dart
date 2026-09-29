@@ -11,6 +11,7 @@ import '../state/assistant_controller.dart';
 import '../state/deliveries_controller.dart';
 import '../state/notifications_controller.dart';
 import '../state/session_controller.dart';
+import '../widgets/item_image.dart';
 import '../widgets/section_card.dart';
 import '../widgets/status_chip.dart';
 import 'assistant_sheet.dart';
@@ -77,6 +78,10 @@ class DeliveryDetailScreen extends StatelessWidget {
         children: [
           _Header(delivery: delivery),
           const SizedBox(height: 12),
+          if (delivery.item != null) ...[
+            _ItemCard(item: delivery.item!, parcels: delivery.parcels),
+            const SizedBox(height: 12),
+          ],
           _CustomerCard(
             delivery: delivery,
             onMessage: () => _openAssistant(context),
@@ -295,6 +300,55 @@ class _Header extends StatelessWidget {
                   label: 'COD ${money(delivery.codAmount, delivery.currency)}',
                   color: AppTheme.warning,
                 ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// The goods themselves: a large product photo plus name, category and the
+/// references the driver can read out at the door.
+class _ItemCard extends StatelessWidget {
+  const _ItemCard({required this.item, required this.parcels});
+
+  final DeliveryItem item;
+  final int parcels;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return SectionCard(
+      title: 'What you are delivering',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ItemImage(
+            item: item,
+            width: double.infinity,
+            height: 176,
+            radius: 18,
+            iconSize: 34,
+          ),
+          const SizedBox(height: 12),
+          Text(
+            item.name,
+            style: theme.textTheme.titleLarge?.copyWith(fontSize: 19),
+          ),
+          if (item.category.isNotEmpty) ...[
+            const SizedBox(height: 3),
+            Text(item.category, style: theme.textTheme.bodySmall),
+          ],
+          const SizedBox(height: 11),
+          Wrap(
+            spacing: 6,
+            runSpacing: 6,
+            children: [
+              MetaPill(icon: Icons.inventory_2_outlined, label: plural(parcels, 'parcel')),
+              if (item.sku.isNotEmpty)
+                MetaPill(icon: Icons.qr_code_2_outlined, label: item.sku),
             ],
           ),
         ],

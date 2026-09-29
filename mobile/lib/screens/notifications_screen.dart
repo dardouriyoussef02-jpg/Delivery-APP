@@ -91,7 +91,7 @@ class _Body extends StatelessWidget {
       return EmptyState(
         icon: Icons.cloud_off_outlined,
         title: 'Could not load notifications',
-        message: controller.error ?? 'The API did not answer.',
+        message: controller.error ?? 'Something went wrong while loading your updates.',
         action: FilledButton(
           onPressed: () => controller.load(),
           child: const Text('Try again'),
@@ -155,18 +155,25 @@ class _NotificationTile extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Material(
-        color: unread ? AppTheme.brand.withValues(alpha: 0.06) : AppTheme.surface,
-        borderRadius: BorderRadius.circular(16),
+        color: unread
+          ? AppTheme.brand.withValues(alpha: 0.08)
+          : AppTheme.surface.withValues(alpha: 0.78),
+        borderRadius: BorderRadius.circular(22),
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(22),
           child: Container(
             width: double.infinity,
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
+              color: unread
+                  ? AppTheme.brand.withValues(alpha: 0.04)
+                  : Colors.white.withValues(alpha: 0.02),
+              borderRadius: BorderRadius.circular(22),
               border: Border.all(
-                color: unread ? AppTheme.brand.withValues(alpha: 0.30) : AppTheme.hairline,
+                color: unread
+                    ? AppTheme.brand.withValues(alpha: 0.28)
+                    : Colors.white.withValues(alpha: 0.10),
               ),
             ),
             child: Row(

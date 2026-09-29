@@ -5,6 +5,7 @@ import '../core/app_theme.dart';
 import '../core/formatters.dart';
 import '../state/deliveries_controller.dart';
 import '../state/notifications_controller.dart';
+import '../state/session_controller.dart';
 import '../widgets/delivery_card.dart';
 import 'delivery_detail_screen.dart';
 import 'home_shell.dart';
@@ -18,21 +19,40 @@ class DeliveriesScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = context.watch<DeliveriesController>();
     final notifications = context.watch<NotificationsController>();
+    final session = context.watch<SessionController>();
     final theme = Theme.of(context);
+    final firstName = session.driverName.trim().split(RegExp(r'\s+')).first;
+    final hour = DateTime.now().hour;
+    final greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
 
     return Scaffold(
       appBar: AppBar(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        toolbarHeight: 76,
+        title: Row(
           children: [
-            const Text('Today\u2019s route'),
-            const SizedBox(height: 2),
-            Text(
-              controller.items.isEmpty
-                  ? 'Loading stops\u2026'
-                  : '${plural(controller.doneCount, 'stop')} done \u00b7 '
-                      '${distance(controller.remainingKm)} left',
-              style: theme.textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w500),
+            CircleAvatar(
+              radius: 21,
+              backgroundColor: AppTheme.surfaceHigh,
+              child: Text(
+                session.initials,
+                style: const TextStyle(color: AppTheme.brand, fontWeight: FontWeight.w800),
+              ),
+            ),
+            const SizedBox(width: 11),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '$greeting, ${firstName.isEmpty ? 'Driver' : firstName}',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600),
+                  ),
+                  Text('Today\u2019s route', style: theme.textTheme.titleMedium),
+                ],
+              ),
             ),
           ],
         ),
@@ -63,11 +83,19 @@ class DeliveriesScreen extends StatelessWidget {
           children: [
             if (controller.offline) const _OfflineBanner(),
             Padding(
+              padding: const EdgeInsets.fromLTRB(16, 2, 16, 12),
+              child: _ShiftOverview(
+                done: controller.doneCount,
+                total: controller.items.length,
+                remainingKm: controller.remainingKm,
+              ),
+            ),
+            Padding(
               padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
               child: TextField(
                 onChanged: controller.setQuery,
                 decoration: const InputDecoration(
-                  hintText: 'Search customer, address or note',
+                  hintText: 'Search customer, item, address or note',
                   prefixIcon: Icon(Icons.search),
                 ),
               ),
@@ -108,6 +136,94 @@ class DeliveriesScreen extends StatelessWidget {
   }
 }
 
+class _ShiftOverview extends StatelessWidget {
+  const _ShiftOverview({required this.done, required this.total, required this.remainingKm});
+
+  final int done;
+  final int total;
+  final double remainingKm;
+
+  @override
+  Widget build(BuildContext context) {
+    final progress = total == 0 ? 0.0 : done / total;
+    final theme = Theme.of(context);
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: AppTheme.heroGradient,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.14)),
+        boxShadow: [
+          ...AppTheme.cardShadow,
+          BoxShadow(
+            color: AppTheme.brand.withValues(alpha: 0.10),
+            blurRadius: 28,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.local_shipping_outlined, color: AppTheme.brand, size: 16),
+              const SizedBox(width: 7),
+              Text(
+                'SHIFT OVERVIEW',
+                style: theme.textTheme.labelSmall?.copyWith(color: AppTheme.inkMuted),
+              ),
+              const Spacer(),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                decoration: BoxDecoration(
+                  color: AppTheme.brand.withValues(alpha: 0.14),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: AppTheme.brand.withValues(alpha: 0.24)),
+                ),
+                child: const Text(
+                  'ON SHIFT',
+                  style: TextStyle(color: AppTheme.brand, fontSize: 10, fontWeight: FontWeight.w800),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text('$done', style: theme.textTheme.headlineSmall?.copyWith(fontSize: 30)),
+              Padding(
+                padding: const EdgeInsets.only(left: 6, bottom: 4),
+                child: Text('of $total stops complete', style: theme.textTheme.bodySmall),
+              ),
+              const Spacer(),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(distance(remainingKm), style: theme.textTheme.titleMedium),
+                  Text('remaining', style: theme.textTheme.labelSmall),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: LinearProgressIndicator(
+              value: progress,
+              minHeight: 7,
+              backgroundColor: Colors.white.withValues(alpha: 0.10),
+              valueColor: const AlwaysStoppedAnimation<Color>(AppTheme.brand),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _Body extends StatelessWidget {
   const _Body({required this.controller});
 
@@ -123,7 +239,7 @@ class _Body extends StatelessWidget {
       return EmptyState(
         icon: Icons.cloud_off_outlined,
         title: 'Could not load your route',
-        message: controller.error ?? 'The API did not answer.',
+        message: controller.error ?? 'Something went wrong while loading your route.',
         action: FilledButton(
           onPressed: () => controller.load(),
           child: const Text('Try again'),
@@ -192,10 +308,11 @@ class _FilterButton extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(
-            color: selected ? AppTheme.brand : AppTheme.surface,
-            borderRadius: BorderRadius.circular(13),
+            color: selected ? null : AppTheme.surface.withValues(alpha: 0.72),
+            gradient: selected ? AppTheme.brandGradient : null,
+            borderRadius: BorderRadius.circular(28),
             border: Border.all(
-              color: selected ? AppTheme.brand : AppTheme.hairline,
+              color: selected ? AppTheme.brand.withValues(alpha: 0.56) : Colors.white.withValues(alpha: 0.10),
             ),
             boxShadow: selected
                 ? [
@@ -251,15 +368,20 @@ class _OfflineBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      color: AppTheme.warning.withValues(alpha: 0.12),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      decoration: BoxDecoration(
+        color: AppTheme.warning.withValues(alpha: 0.10),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppTheme.warning.withValues(alpha: 0.24)),
+      ),
       child: Row(
         children: [
           const Icon(Icons.wifi_off_outlined, size: 15, color: AppTheme.warning),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
-              'Backend unreachable - showing the bundled demo route.',
+              'You are offline - showing your saved demo route.',
               style: const TextStyle(
                 fontSize: 12.5,
                 color: AppTheme.warning,

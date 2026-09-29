@@ -38,8 +38,8 @@ class ApiException implements Exception {
   final String message;
   final int? statusCode;
 
-  /// True when the backend could not be reached at all (no network / wrong
-  /// base URL), which is when the app falls back to bundled demo data.
+  /// True when the backend could not be reached at all (no network / host
+  /// down), which is when the app falls back to bundled demo data.
   final bool offline;
 
   bool get isUnauthorized => statusCode == 401;
@@ -91,30 +91,28 @@ class ApiClient {
     try {
       final streamed = await _client.send(request).timeout(AppConfig.requestTimeout);
       final response = await http.Response.fromStream(streamed);
-      return _decode(response, uri);
+      return _decode(response);
     } on ApiException {
       rethrow;
     } on TimeoutException {
       throw ApiException('The server took too long to answer. Try again.', offline: true);
     } on http.ClientException {
-      throw ApiException(
-        'Cannot reach the server at ${uri.host}. Check the API URL in Settings.',
-        offline: true,
-      );
+      throw ApiException(_offlineMessage, offline: true);
     } catch (error) {
       // dart:io socket failures only exist on Android/iOS/desktop; the stub
       // returns false on web where package:http reports ClientException.
       if (isNetworkError(error)) {
-        throw ApiException(
-          'Cannot reach the server at ${uri.host}. Check the API URL in Settings.',
-          offline: true,
-        );
+        throw ApiException(_offlineMessage, offline: true);
       }
       rethrow;
     }
   }
 
-  dynamic _decode(http.Response response, Uri uri) {
+  /// Wording for an unreachable host. It deliberately names no host, port or
+  /// setting: connection details belong to the backend, not to a device screen.
+  static const _offlineMessage = 'Cannot reach the server right now. Please try again.';
+
+  dynamic _decode(http.Response response) {
     dynamic payload;
     if (response.body.isNotEmpty) {
       try {
@@ -125,9 +123,11 @@ class ApiClient {
     }
 
     if (response.statusCode >= 400) {
+      // Only the service's own human-readable error is forwarded. Status codes
+      // and paths stay in the client so a screen never shows an endpoint.
       final message = payload is Map && payload['error'] is String
           ? payload['error'] as String
-          : 'Request failed (${response.statusCode}) on ${uri.path}';
+          : 'The server could not complete the request.';
       if (response.statusCode == 401) {
         // Fire and forget: the session controller clears the stored token.
         onUnauthorized?.call();

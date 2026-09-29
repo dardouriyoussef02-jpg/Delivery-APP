@@ -86,7 +86,7 @@ class AuthService {
   Future<DriverProfile> me() async {
     final data = await _api.get('/api/v1/auth/me');
     final driver = (data as Map?)?['driver'] as Map?;
-    if (driver == null) throw ApiException('Unexpected response from /auth/me');
+    if (driver == null) throw ApiException('Unexpected response from the server.');
     return DriverProfile.fromJson(driver.cast<String, dynamic>());
   }
 }

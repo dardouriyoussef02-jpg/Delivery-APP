@@ -227,7 +227,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 title: const Text('Fleet statistics'),
                 subtitle: Text(
-                  'Live totals from the service database',
+                  'Live totals for the whole fleet',
                   style: theme.textTheme.bodySmall
                       ?.copyWith(color: AppTheme.inkMuted),
                 ),

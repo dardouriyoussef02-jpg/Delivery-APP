@@ -41,7 +41,7 @@ class DeliveryRepository {
       return all.firstWhere(
         (delivery) => delivery.id == id,
         orElse: () => all.isEmpty
-            ? throw ApiException('Delivery $id not found in the offline demo data')
+            ? throw ApiException('Delivery $id is not available right now.')
             : all.first,
       );
     }

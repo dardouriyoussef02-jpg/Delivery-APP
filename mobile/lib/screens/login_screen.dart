@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../core/app_theme.dart';
-import '../services/api_client.dart';
 import '../state/session_controller.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -18,9 +17,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmController = TextEditingController();
-  final _urlController = TextEditingController();
   bool _obscure = true;
-  bool _showAdvanced = false;
 
   /// false = sign in, true = create a new driver account.
   bool _signUp = false;
@@ -29,7 +26,6 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
     final session = context.read<SessionController>();
-    _urlController.text = session.baseUrl;
     if (session.driverEmail.isNotEmpty) _emailController.text = session.driverEmail;
 
     // Explains why the driver landed back here (expired/revoked session).
@@ -49,7 +45,6 @@ class _LoginScreenState extends State<LoginScreen> {
     _emailController.dispose();
     _passwordController.dispose();
     _confirmController.dispose();
-    _urlController.dispose();
     super.dispose();
   }
 
@@ -58,7 +53,6 @@ class _LoginScreenState extends State<LoginScreen> {
     FocusScope.of(context).unfocus();
 
     if (!_formKey.currentState!.validate()) return;
-    await session.setBaseUrl(_urlController.text);
     final ok = _signUp
         ? await session.signUp(
             name: _nameController.text,
@@ -94,7 +88,7 @@ class _LoginScreenState extends State<LoginScreen> {
       backgroundColor: AppTheme.bg,
       body: Stack(
         children: [
-          // Luminous lime bloom behind the hero.
+          // Warm orange bloom behind the hero.
           Positioned.fill(
             child: DecoratedBox(decoration: BoxDecoration(gradient: AppTheme.bloom(alpha: 0.26))),
           ),
@@ -242,48 +236,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         onFieldSubmitted: (_) => _submit(),
                       ),
                     ],
-                    const SizedBox(height: 8),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: TextButton.icon(
-                        onPressed: () => setState(() => _showAdvanced = !_showAdvanced),
-                        icon: Icon(
-                          _showAdvanced ? Icons.expand_less : Icons.expand_more,
-                          size: 18,
-                        ),
-                        label: Text(_showAdvanced ? 'Hide API settings' : 'API settings'),
-                      ),
-                    ),
-                    if (_showAdvanced) ...[
-                      TextFormField(
-                        controller: _urlController,
-                        keyboardType: TextInputType.url,
-                        decoration: const InputDecoration(
-                          labelText: 'Backend base URL',
-                          hintText: AppConfig.defaultBaseUrl,
-                          prefixIcon: Icon(Icons.dns_outlined),
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      OutlinedButton.icon(
-                        onPressed: session.busy
-                            ? null
-                            : () async {
-                                await session.setBaseUrl(_urlController.text);
-                                final result = await session.testConnection();
-                                if (!context.mounted) return;
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(result.message),
-                                    backgroundColor:
-                                        result.ok ? null : AppTheme.danger,
-                                  ),
-                                );
-                              },
-                        icon: const Icon(Icons.wifi_tethering_outlined, size: 18),
-                        label: const Text('Test connection'),
-                      ),
-                    ],
                     const SizedBox(height: 20),
                     FilledButton(
                       onPressed: session.busy ? null : _submit,
@@ -326,10 +278,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             const SizedBox(width: 10),
                             Expanded(
                               child: Text(
-                                'Sign in with your fleet account (demo credentials are '
-                                'configured in services/ai-agent/.env). The AI assistant '
-                                'runs on the bundled agent service - start it with '
-                                '"npm start" in services/ai-agent.',
+                                'Sign in with the account your fleet gave you. '
+                                'Trouble getting in? Contact your dispatcher.',
                                 style: theme.textTheme.bodySmall,
                               ),
                             ),

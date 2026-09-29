@@ -29,8 +29,9 @@ flutter create --project-name delivery_driver --org com.example --platforms andr
 
 ### Backend URL
 
-Profile → **Connection → Backend base URL** (persisted with
-`shared_preferences`):
+A **build setting, not a screen**: the app never shows or edits its endpoint.
+It lives in `AppConfig.defaultBaseUrl` (`lib/services/api_client.dart`) and
+connection details are kept out of the UI on purpose.
 
 | Runner | URL |
 | --- | --- |
@@ -61,7 +62,7 @@ lib/
 │   ├── contact_actions.dart  # call, SMS, WhatsApp, navigation
 │   └── native_platform.dart  # method channel wrapper (graceful fallback)
 ├── state/
-│   ├── session_controller.dart      # auth, base URL, preferences
+│   ├── session_controller.dart      # auth, session, preferences
 │   ├── deliveries_controller.dart   # load, filter, search, status updates
 │   └── assistant_controller.dart    # analyse → review → send
 ├── screens/

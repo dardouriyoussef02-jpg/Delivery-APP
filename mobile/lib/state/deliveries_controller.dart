@@ -76,6 +76,8 @@ class DeliveriesController extends ChangeNotifier {
           delivery.customer.fullName.toLowerCase().contains(needle) ||
           delivery.address.singleLine.toLowerCase().contains(needle) ||
           delivery.zone.toLowerCase().contains(needle) ||
+          (delivery.item?.name.toLowerCase().contains(needle) ?? false) ||
+          (delivery.item?.category.toLowerCase().contains(needle) ?? false) ||
           delivery.notes.any((note) => note.text.toLowerCase().contains(needle));
     }).toList();
   }

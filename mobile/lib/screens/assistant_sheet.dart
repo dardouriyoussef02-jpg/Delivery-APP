@@ -630,7 +630,7 @@ class _TraceSection extends StatelessWidget {
                 ),
               ),
             Text(
-              'Provider: ${suggestion.provider} \u00b7 request ${suggestion.requestId}',
+              'Reference ${suggestion.requestId}',
               style: theme.textTheme.bodySmall?.copyWith(color: AppTheme.inkFaint),
             ),
           ],

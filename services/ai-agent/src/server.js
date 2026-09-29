@@ -3,7 +3,7 @@ import cors from 'cors';
 import { pathToFileURL } from 'node:url';
 import config from './config.js';
 import { createDeliveryGateway } from './data/gateway.js';
-import { openDatabase, seedDemoDeliveries, seedDemoNotifications } from './data/database.js';
+import { backfillDemoItems, openDatabase, seedDemoDeliveries, seedDemoNotifications } from './data/database.js';
 import {
   createNotificationStore,
   createSqliteAuthStore,
@@ -38,6 +38,7 @@ export function createDefaultAuth(database, { log = console } = {}) {
 export function createApp({ db, gateway, auth } = {}) {
   const database = db ?? openDatabase({ path: config.db.path });
   seedDemoDeliveries(database);
+  backfillDemoItems(database);
 
   const deliveryGateway = gateway ?? createDeliveryGateway({ store: createSqliteStore(database) });
   const authStore = auth ?? createDefaultAuth(database);

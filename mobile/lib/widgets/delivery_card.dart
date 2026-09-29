@@ -1,8 +1,11 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 
 import '../core/app_theme.dart';
 import '../core/formatters.dart';
 import '../models/delivery.dart';
+import 'item_image.dart';
 import 'section_card.dart';
 import 'status_chip.dart';
 
@@ -25,15 +28,20 @@ class DeliveryCard extends StatelessWidget {
     final finished = delivery.status.isFinished;
     final active = delivery.status == DeliveryStatus.inTransit;
     final note = delivery.primaryNote;
+    final item = delivery.item;
 
-    return Container(
-      decoration: AppTheme.cardDecoration,
-      child: Material(
-        type: MaterialType.transparency,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(20),
-          child: Opacity(
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(24),
+      child: BackdropFilter(
+        filter: ui.ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+        child: Container(
+          decoration: AppTheme.cardDecoration,
+          child: Material(
+            type: MaterialType.transparency,
+            child: InkWell(
+              onTap: onTap,
+              borderRadius: BorderRadius.circular(24),
+              child: Opacity(
             opacity: finished ? 0.62 : 1,
             child: Padding(
               padding: const EdgeInsets.all(15),
@@ -64,6 +72,45 @@ class DeliveryCard extends StatelessWidget {
                             StatusChip(status: delivery.status, compact: true),
                           ],
                         ),
+                        if (item != null) ...[
+                          const SizedBox(height: 9),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              ItemImage(item: item, width: 54, height: 54, radius: 15),
+                              const SizedBox(width: 11),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'DELIVERING',
+                                      style: theme.textTheme.labelSmall?.copyWith(
+                                        color: AppTheme.inkMuted,
+                                        letterSpacing: 0.6,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      item.name,
+                                      style: theme.textTheme.bodyMedium
+                                          ?.copyWith(fontWeight: FontWeight.w700),
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    if (item.category.isNotEmpty)
+                                      Text(
+                                        item.category,
+                                        style: theme.textTheme.bodySmall,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                         const SizedBox(height: 4),
                         Text(
                           delivery.address.singleLine,
@@ -144,6 +191,8 @@ class DeliveryCard extends StatelessWidget {
                     ),
                   ),
                 ],
+              ),
+            ),
               ),
             ),
           ),

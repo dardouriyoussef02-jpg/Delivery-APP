@@ -19,6 +19,9 @@ void main() {
       expect(delivery.notes, hasLength(2));
       expect(delivery.events, hasLength(3));
       expect(delivery.hasAccessInstructions, isTrue);
+      expect(delivery.item?.name, 'Espresso machine');
+      expect(delivery.item?.category, 'Small appliances');
+      expect(delivery.item?.hasImage, isTrue);
     });
 
     test('primaryNote prefers the newest customer note', () {
@@ -115,6 +118,12 @@ const _deliveryJson = '''
   "parcels": 2,
   "codAmount": 24.9,
   "currency": "EUR",
+  "item": {
+    "name": "Espresso machine",
+    "category": "Small appliances",
+    "sku": "SKU-ESP-2201",
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Espresso_machine_1.jpg/960px-Espresso_machine_1.jpg"
+  },
   "address": {
     "line1": "18 Kanalstraat",
     "line2": "Flat 4B, 2nd floor",

@@ -112,6 +112,7 @@ export function createToolExecutor({ deliveryStore, guidelinesSearch = searchGui
             parcels: delivery.parcels,
             codAmount: delivery.codAmount,
             currency: delivery.currency,
+            item: delivery.item ?? null,
             distanceKm: delivery.distanceKm,
             address: delivery.address,
             customer: delivery.customer,

@@ -236,6 +236,11 @@ void main() {
     expect(find.text('Full name'), findsNothing);
     // 2 fields again: e-mail + password.
     expect(find.byType(TextFormField), findsNWidgets(2));
-    expect(find.textContaining('demo credentials are configured'), findsOneWidget);
+    expect(find.textContaining('Contact your dispatcher'), findsOneWidget);
+    // No backend/API details on the sign-in screen.
+    expect(find.textContaining('API settings'), findsNothing);
+    expect(find.textContaining('.env'), findsNothing);
+    expect(find.textContaining('npm'), findsNothing);
+    expect(find.textContaining('localhost'), findsNothing);
   });
 }

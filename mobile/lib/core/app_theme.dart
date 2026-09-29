@@ -4,8 +4,7 @@ import 'package:flutter/services.dart';
 
 import '../models/delivery.dart';
 
-/// Design system for the app: a premium dark canvas lit by an electric-lime
-/// brand with a luminous aqua accent for everything AI.
+/// Shared warm-glass design tokens for the delivery driver app.
 ///
 /// Screens should pull colours from these tokens instead of hard-coding them,
 /// so the whole product stays consistent and can be re-skinned from here.
@@ -13,38 +12,38 @@ class AppTheme {
   AppTheme._();
 
   // ------------------------------------------------------------------ canvas
-  /// Deep charcoal-navy background.
-  static const Color bg = Color(0xFF0A0E13);
+  /// Warm near-black canvas.
+  static const Color bg = Color(0xFF0D0D0F);
 
-  /// Card surface - one step lighter than the canvas.
-  static const Color surface = Color(0xFF121A23);
+  /// Translucent charcoal glass surface.
+  static const Color surface = Color(0xCC1A1716);
 
   /// Nested surface: inputs, note blocks, inner tiles.
-  static const Color surfaceAlt = Color(0xFF18222D);
+  static const Color surfaceAlt = Color(0x99231F1D);
 
   /// Raised surface: dialogs, snackbars, chips.
-  static const Color surfaceHigh = Color(0xFF1F2B38);
+  static const Color surfaceHigh = Color(0xFF2C2623);
 
-  /// Hairline separators and card borders.
-  static const Color hairline = Color(0xFF26333F);
+  /// Subtle translucent white separators and glass borders.
+  static const Color hairline = Color(0x1FFFFFFF);
 
   // -------------------------------------------------------------------- text
-  static const Color ink = Color(0xFFEDF2F7);
-  static const Color inkMuted = Color(0xFF94A2B3);
-  static const Color inkFaint = Color(0xFF64748B);
+  static const Color ink = Color(0xFFFFFFFF);
+  static const Color inkMuted = Color(0xFFB8B8B8);
+  static const Color inkFaint = Color(0xFF858181);
 
   // ------------------------------------------------------------------ brand
-  /// Electric lime: the signature colour of the brand.
-  static const Color brand = Color(0xFFB4FF39);
+  /// Warm orange: the signature action color.
+  static const Color brand = Color(0xFFFF9F1C);
 
-  /// Deeper lime, used for tinted fills and lime-on-lime details.
-  static const Color brandDark = Color(0xFF79C93B);
+  /// Deeper orange for gradient edges and pressed states.
+  static const Color brandDark = Color(0xFFF97316);
 
-  /// Foreground for primary buttons sitting on lime.
-  static const Color onBrand = Color(0xFF0B1405);
+  /// High-contrast foreground for primary orange actions.
+  static const Color onBrand = Color(0xFFFFFFFF);
 
-  /// Luminous aqua: the "AI is talking" accent.
-  static const Color accent = Color(0xFF5FE3C0);
+  /// Secondary warm accent used for AI and highlighted route details.
+  static const Color accent = Color(0xFFF97316);
 
   // --------------------------------------------------------------- semantic
   static const Color success = Color(0xFF4ADE80);
@@ -52,25 +51,25 @@ class AppTheme {
   static const Color danger = Color(0xFFFF6B6B);
 
   // -------------------------------------------------------------- gradients
-  /// Signature gradient (lime -> aqua) for brand moments.
+  /// Signature orange gradient for brand moments.
   static const LinearGradient brandGradient = LinearGradient(
-    colors: [brand, accent],
+    colors: [brand, brandDark],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
 
   /// Subtle background wash used behind hero areas.
   static const LinearGradient heroGradient = LinearGradient(
-    colors: [Color(0xFF16241A), Color(0xFF0E1620)],
+    colors: [Color(0xFF3A2518), Color(0xFF171413), Color(0xFF111112)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
 
-  /// Radial lime bloom, layered behind heroes and key callouts.
+  /// Radial orange bloom, layered behind heroes and key callouts.
   static RadialGradient bloom({double alpha = 0.28}) => RadialGradient(
         center: Alignment.topRight,
         radius: 1.15,
-        colors: [brand.withValues(alpha: alpha), Colors.transparent],
+        colors: [brand.withValues(alpha: alpha), brandDark.withValues(alpha: alpha * 0.35), Colors.transparent],
       );
 
   // --------------------------------------------------------------- elevation
@@ -82,19 +81,19 @@ class AppTheme {
         ),
       ];
 
-  /// The one card treatment used across the app.
+    /// Shared translucent card treatment used across the app.
   static BoxDecoration get cardDecoration => BoxDecoration(
-        color: surface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: hairline),
+      color: surface.withValues(alpha: 0.86),
+      borderRadius: BorderRadius.circular(24),
+      border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
         boxShadow: cardShadow,
       );
 
   /// Softer variant for tiles nested inside a card.
   static BoxDecoration get innerDecoration => BoxDecoration(
-        color: surfaceAlt,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: hairline),
+        color: surfaceAlt.withValues(alpha: 0.78),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
       );
 
   static ThemeData dark() {
@@ -102,11 +101,11 @@ class AppTheme {
       brightness: Brightness.dark,
       primary: brand,
       onPrimary: onBrand,
-      primaryContainer: Color(0xFF2A3D17),
+      primaryContainer: Color(0xFF4A2D16),
       onPrimaryContainer: brand,
       secondary: accent,
-      onSecondary: Color(0xFF062019),
-      secondaryContainer: Color(0xFF12312A),
+      onSecondary: Color(0xFFFFFFFF),
+      secondaryContainer: Color(0xFF442516),
       onSecondaryContainer: accent,
       tertiary: warning,
       onTertiary: Color(0xFF251800),
@@ -114,7 +113,7 @@ class AppTheme {
       onError: Color(0xFF2A0707),
       errorContainer: Color(0xFF3A1414),
       onErrorContainer: Color(0xFFFFB4B4),
-      surface: bg,
+      surface: surface,
       onSurface: ink,
       onSurfaceVariant: inkMuted,
       surfaceContainerHighest: surfaceHigh,
@@ -133,11 +132,11 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       colorScheme: scheme,
-      scaffoldBackgroundColor: bg,
+      scaffoldBackgroundColor: Colors.transparent,
       splashFactory: InkSparkle.splashFactory,
 
       appBarTheme: const AppBarTheme(
-        backgroundColor: bg,
+        backgroundColor: Colors.transparent,
         foregroundColor: ink,
         elevation: 0,
         scrolledUnderElevation: 0,
@@ -147,30 +146,30 @@ class AppTheme {
           color: ink,
           fontSize: 21,
           fontWeight: FontWeight.w800,
-          letterSpacing: -0.4,
+          letterSpacing: 0,
         ),
       ),
 
       textTheme: const TextTheme(
         displaySmall: TextStyle(
-            fontSize: 30, fontWeight: FontWeight.w800, color: ink, letterSpacing: -0.8, height: 1.1),
+            fontSize: 30, fontWeight: FontWeight.w800, color: ink, letterSpacing: 0, height: 1.1),
         headlineSmall: TextStyle(
-            fontSize: 24, fontWeight: FontWeight.w800, color: ink, letterSpacing: -0.5, height: 1.2),
+            fontSize: 24, fontWeight: FontWeight.w800, color: ink, letterSpacing: 0, height: 1.2),
         titleLarge: TextStyle(
-            fontSize: 22, fontWeight: FontWeight.w800, color: ink, letterSpacing: -0.5, height: 1.2),
-        titleMedium: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: ink, letterSpacing: -0.2),
+            fontSize: 22, fontWeight: FontWeight.w800, color: ink, letterSpacing: 0, height: 1.2),
+          titleMedium: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: ink, letterSpacing: 0),
         titleSmall: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: ink),
         bodyLarge: TextStyle(fontSize: 16, color: ink, height: 1.4),
         bodyMedium: TextStyle(fontSize: 14.5, color: Color(0xFFC4CFDB), height: 1.4),
         bodySmall: TextStyle(fontSize: 12.5, color: inkMuted, height: 1.35),
-        labelLarge: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, letterSpacing: -0.1),
+        labelLarge: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, letterSpacing: 0),
         labelMedium: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: inkMuted),
         labelSmall: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: inkFaint),
       ),
 
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: surfaceAlt,
+        fillColor: surfaceAlt.withValues(alpha: 0.72),
         hintStyle: const TextStyle(color: inkFaint, fontSize: 14.5),
         labelStyle: const TextStyle(color: inkMuted, fontSize: 14.5),
         floatingLabelStyle: const TextStyle(color: brand, fontWeight: FontWeight.w700),
@@ -178,23 +177,23 @@ class AppTheme {
         suffixIconColor: inkMuted,
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(28),
           borderSide: const BorderSide(color: hairline),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: hairline),
+          borderRadius: BorderRadius.circular(28),
+          borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.12)),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: brand, width: 1.6),
+          borderRadius: BorderRadius.circular(28),
+          borderSide: const BorderSide(color: brand, width: 1.4),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(28),
           borderSide: const BorderSide(color: danger),
         ),
         focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(28),
           borderSide: const BorderSide(color: danger, width: 1.6),
         ),
       ),
@@ -209,8 +208,8 @@ class AppTheme {
           elevation: 6,
           minimumSize: const Size.fromHeight(54),
           padding: const EdgeInsets.symmetric(horizontal: 20),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          textStyle: const TextStyle(fontSize: 15.5, fontWeight: FontWeight.w800, letterSpacing: -0.1),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+          textStyle: const TextStyle(fontSize: 15.5, fontWeight: FontWeight.w800, letterSpacing: 0),
         ),
       ),
 
@@ -222,7 +221,7 @@ class AppTheme {
           side: const BorderSide(color: hairline),
           minimumSize: const Size.fromHeight(52),
           padding: const EdgeInsets.symmetric(horizontal: 20),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
           textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
         ),
       ),
@@ -239,10 +238,10 @@ class AppTheme {
       ),
 
       navigationBarTheme: NavigationBarThemeData(
-        backgroundColor: const Color(0xFF0D131A),
+        backgroundColor: const Color(0xE6171514),
         shadowColor: Colors.transparent,
         surfaceTintColor: Colors.transparent,
-        indicatorColor: brand.withValues(alpha: 0.16),
+        indicatorColor: brand.withValues(alpha: 0.18),
         height: 72,
         elevation: 0,
         labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
@@ -258,13 +257,13 @@ class AppTheme {
       ),
 
       chipTheme: ChipThemeData(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(11)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         side: const BorderSide(color: hairline),
         backgroundColor: surfaceAlt,
         selectedColor: brand.withValues(alpha: 0.16),
         checkmarkColor: brand,
         labelStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: ink),
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       ),
 
       dividerTheme: const DividerThemeData(color: hairline, space: 1, thickness: 1),

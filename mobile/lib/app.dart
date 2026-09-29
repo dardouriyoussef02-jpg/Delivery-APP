@@ -91,6 +91,13 @@ class _DeliveryAppState extends State<DeliveryApp> with WidgetsBindingObserver {
       child: MaterialApp(
         title: 'Delivery Driver',
         debugShowCheckedModeBanner: false,
+        builder: (context, child) => Stack(
+          fit: StackFit.expand,
+          children: [
+            const _AppBackdrop(),
+            if (child != null) child,
+          ],
+        ),
         theme: AppTheme.dark(),
         navigatorKey: navigatorKey,
         home: Consumer<SessionController>(
@@ -111,6 +118,50 @@ class _DeliveryAppState extends State<DeliveryApp> with WidgetsBindingObserver {
   }
 }
 
+class _AppBackdrop extends StatelessWidget {
+  const _AppBackdrop();
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        const ColoredBox(color: AppTheme.bg),
+        Positioned(
+          top: -210,
+          right: -160,
+          width: 520,
+          height: 520,
+          child: IgnorePointer(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: RadialGradient(
+                  colors: [AppTheme.brand.withValues(alpha: 0.17), Colors.transparent],
+                ),
+              ),
+            ),
+          ),
+        ),
+        Positioned(
+          bottom: -230,
+          left: -180,
+          width: 500,
+          height: 500,
+          child: IgnorePointer(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: RadialGradient(
+                  colors: [AppTheme.brandDark.withValues(alpha: 0.08), Colors.transparent],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 class _SplashScreen extends StatelessWidget {
   const _SplashScreen();
 
@@ -121,7 +172,7 @@ class _SplashScreen extends StatelessWidget {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // Lime bloom in the top-right corner, matching the app's hero look.
+          // Warm bloom in the top-right corner, matching the app's hero look.
           DecoratedBox(
             decoration: BoxDecoration(gradient: AppTheme.bloom(alpha: 0.22)),
           ),
