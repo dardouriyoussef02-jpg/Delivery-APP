@@ -1,0 +1,23 @@
+# Dependencies / build output
+node_modules/
+build/
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+pubspec.lock.bak
+
+# Secrets
+.env
+*.env.local
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Flutter/Dart tooling
+coverage/

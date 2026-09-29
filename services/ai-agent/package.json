@@ -1,0 +1,29 @@
+{
+  "name": "delivery-ai-agent-service",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Lightweight AI agent service that turns a driver's delivery note into a suggested next action plus a short customer message the driver reviews and sends.",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "delivery",
+    "ai-agent",
+    "claude",
+    "anthropic",
+    "flutter",
+    "driver-app"
+  ],
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
+  }
+}

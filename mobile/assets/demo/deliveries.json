@@ -1,0 +1,198 @@
+{
+  "mode": "offline-demo",
+  "driverId": "DRV-77",
+  "deliveries": [
+    {
+      "id": "DLV-1042",
+      "status": "in_transit",
+      "zone": "Riverside",
+      "sequence": 3,
+      "driverId": "DRV-77",
+      "windowStart": "2026-09-28T15:30:00.000Z",
+      "windowEnd": "2026-09-28T16:30:00.000Z",
+      "eta": "2026-09-28T15:52:00.000Z",
+      "distanceKm": 4.2,
+      "parcels": 2,
+      "codAmount": 24.9,
+      "currency": "EUR",
+      "address": {
+        "line1": "18 Kanalstraat",
+        "line2": "Flat 4B, 2nd floor",
+        "city": "Rotterdam",
+        "postalCode": "3011 AB",
+        "lat": 51.9161,
+        "lng": 4.4795,
+        "accessHint": "Buzzer 4B is broken - call on arrival"
+      },
+      "customer": {
+        "id": "CUS-8821",
+        "firstName": "Sanne",
+        "lastName": "de Vries",
+        "phone": "+31 6 1234 5678",
+        "preferredChannel": "sms",
+        "language": "nl",
+        "rating": 4.8
+      },
+      "notes": [
+        {
+          "id": "NOTE-1",
+          "author": "customer",
+          "createdAt": "2026-09-28T14:34:00.000Z",
+          "text": "Gate code 4482, please leave the parcels with my neighbour at no. 20 if I do not open. I am in a meeting until 16:00."
+        },
+        {
+          "id": "NOTE-2",
+          "author": "dispatcher",
+          "createdAt": "2026-09-28T14:50:00.000Z",
+          "text": "Customer asked for a delivery update when the driver is 10 minutes away."
+        }
+      ],
+      "events": [
+        { "at": "2026-09-28T14:15:00.000Z", "type": "assigned", "label": "Assigned to driver" },
+        { "at": "2026-09-28T14:50:00.000Z", "type": "picked_up", "label": "Parcels picked up at hub" },
+        { "at": "2026-09-28T15:38:00.000Z", "type": "in_transit", "label": "On the way to Kanalstraat" }
+      ],
+      "history": [
+        { "at": "2026-09-25T10:00:00.000Z", "outcome": "delivered", "label": "Delivered on first attempt" },
+        { "at": "2026-09-21T13:20:00.000Z", "outcome": "delivered", "label": "Left with neighbour" }
+      ]
+    },
+    {
+      "id": "DLV-1043",
+      "status": "in_transit",
+      "zone": "Nieuwe Westen",
+      "sequence": 4,
+      "driverId": "DRV-77",
+      "windowStart": "2026-09-28T16:10:00.000Z",
+      "windowEnd": "2026-09-28T17:10:00.000Z",
+      "eta": "2026-09-28T16:28:00.000Z",
+      "distanceKm": 6.7,
+      "parcels": 1,
+      "codAmount": 0,
+      "currency": "EUR",
+      "address": {
+        "line1": "204 Delfshavenseweg",
+        "line2": "",
+        "city": "Rotterdam",
+        "postalCode": "3024 AK",
+        "lat": 51.9054,
+        "lng": 4.4372,
+        "accessHint": ""
+      },
+      "customer": {
+        "id": "CUS-9013",
+        "firstName": "Marco",
+        "lastName": "Bianchi",
+        "phone": "+31 6 9876 5432",
+        "preferredChannel": "whatsapp",
+        "language": "en",
+        "rating": 4.6
+      },
+      "notes": [
+        {
+          "id": "NOTE-3",
+          "author": "customer",
+          "createdAt": "2026-09-28T15:08:00.000Z",
+          "text": "Parcel arrived damaged, the box is crushed and the seal is open. I want to refuse it."
+        }
+      ],
+      "events": [
+        { "at": "2026-09-28T14:15:00.000Z", "type": "assigned", "label": "Assigned to driver" },
+        { "at": "2026-09-28T14:48:00.000Z", "type": "picked_up", "label": "Parcel picked up at hub" }
+      ],
+      "history": [
+        { "at": "2026-09-26T09:30:00.000Z", "outcome": "delivered", "label": "Delivered on first attempt" }
+      ]
+    },
+    {
+      "id": "DLV-1044",
+      "status": "pending",
+      "zone": "Kralingen",
+      "sequence": 5,
+      "driverId": "DRV-77",
+      "windowStart": "2026-09-28T17:20:00.000Z",
+      "windowEnd": "2026-09-28T18:20:00.000Z",
+      "eta": "2026-09-28T17:31:00.000Z",
+      "distanceKm": 9.1,
+      "parcels": 3,
+      "codAmount": 61.4,
+      "currency": "EUR",
+      "address": {
+        "line1": "7 Laan van Coolsingen",
+        "line2": "Office 1.12",
+        "city": "Rotterdam",
+        "postalCode": "3015 AE",
+        "lat": 51.9155,
+        "lng": 4.4966,
+        "accessHint": "Reception closes at 17:00 sharp"
+      },
+      "customer": {
+        "id": "CUS-7742",
+        "firstName": "Priya",
+        "lastName": "Nair",
+        "phone": "+31 6 5555 0199",
+        "preferredChannel": "sms",
+        "language": "en",
+        "rating": 4.9
+      },
+      "notes": [
+        {
+          "id": "NOTE-4",
+          "author": "customer",
+          "createdAt": "2026-09-28T15:25:00.000Z",
+          "text": "Can we move this to tomorrow morning? Nobody will be in the office today, sorry for the short notice."
+        }
+      ],
+      "events": [
+        { "at": "2026-09-28T14:16:00.000Z", "type": "assigned", "label": "Assigned to driver" }
+      ],
+      "history": [
+        { "at": "2026-09-27T11:00:00.000Z", "outcome": "failed", "label": "Recipient unavailable" }
+      ]
+    },
+    {
+      "id": "DLV-1045",
+      "status": "pending",
+      "zone": "Feijenoord",
+      "sequence": 6,
+      "driverId": "DRV-77",
+      "windowStart": "2026-09-28T18:30:00.000Z",
+      "windowEnd": "2026-09-28T19:30:00.000Z",
+      "eta": "2026-09-28T18:45:00.000Z",
+      "distanceKm": 11.4,
+      "parcels": 1,
+      "codAmount": 12.0,
+      "currency": "EUR",
+      "address": {
+        "line1": "51 Oranjeboomstraat",
+        "line2": "",
+        "city": "Rotterdam",
+        "postalCode": "3072 XK",
+        "lat": 51.8926,
+        "lng": 4.4875,
+        "accessHint": ""
+      },
+      "customer": {
+        "id": "CUS-6650",
+        "firstName": "Joris",
+        "lastName": "Bakker",
+        "phone": "+31 6 4444 7788",
+        "preferredChannel": "sms",
+        "language": "nl",
+        "rating": 4.4
+      },
+      "notes": [
+        {
+          "id": "NOTE-5",
+          "author": "customer",
+          "createdAt": "2026-09-28T15:32:00.000Z",
+          "text": "Ring the bell twice, I am hard of hearing. Please do not leave it in the porch."
+        }
+      ],
+      "events": [
+        { "at": "2026-09-28T14:17:00.000Z", "type": "assigned", "label": "Assigned to driver" }
+      ],
+      "history": []
+    }
+  ]
+}
