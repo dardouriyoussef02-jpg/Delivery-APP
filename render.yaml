@@ -16,12 +16,12 @@ services:
     buildCommand: npm ci
     startCommand: npm start
     healthCheckPath: /health
-    autoDeploy: true
+    autoDeployTrigger: 'commit'
     envVars:
-      # `node:sqlite` (used by src/data/database.js) needs Node 24 - it is
-      # unflagged there, which is what this service is verified against.
-      - key: NODE_VERSION
-        value: "24"
+      # Node version comes from `engines` in services/ai-agent/package.json
+      # (>=24 <25): `node:sqlite` is unflagged on 24. No NODE_VERSION override
+      # - Render's default for new services is already 24.21.0, and a bare
+      # "24" is neither the semver number nor the alias its docs describe.
       # Keep the assistant on the offline rules engine so a public endpoint
       # cannot burn Anthropic credits. Set LLM_PROVIDER=anthropic and
       # ANTHROPIC_API_KEY in the dashboard if you want real replies.
