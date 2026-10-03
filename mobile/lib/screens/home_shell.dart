@@ -78,45 +78,51 @@ class _FloatingNavigationBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Full-width translucent bar (`bg-surface-container-low/90 backdrop-blur-xl`).
     return SafeArea(
-      minimum: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(32),
-        child: BackdropFilter(
-          filter: ui.ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-          child: Container(
-            height: 76,
-            decoration: BoxDecoration(
-              color: AppTheme.surface.withValues(alpha: 0.92),
-              borderRadius: BorderRadius.circular(32),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
-              boxShadow: AppTheme.cardShadow,
+      top: false,
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppTheme.surfaceAlt.withValues(alpha: 0.90),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.5),
+              blurRadius: 24,
+              offset: const Offset(0, -4),
             ),
-            child: Row(
-              children: [
-                _NavigationItem(
-                  label: 'Deliveries',
-                  icon: Icons.list_alt_outlined,
-                  selectedIcon: Icons.list_alt_rounded,
-                  selected: selectedIndex == 0,
-                  onTap: () => onSelected(0),
-                ),
-                _NavigationItem(
-                  label: 'Route',
-                  icon: Icons.route_outlined,
-                  selectedIcon: Icons.route_rounded,
-                  selected: selectedIndex == 1,
-                  badgeCount: attentionCount,
-                  onTap: () => onSelected(1),
-                ),
-                _NavigationItem(
-                  label: 'Profile',
-                  icon: Icons.person_outline_rounded,
-                  selectedIcon: Icons.person_rounded,
-                  selected: selectedIndex == 2,
-                  onTap: () => onSelected(2),
-                ),
-              ],
+          ],
+        ),
+        child: ClipRect(
+          child: BackdropFilter(
+            filter: ui.ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+            child: SizedBox(
+              height: 80,
+              child: Row(
+                children: [
+                  _NavigationItem(
+                    label: 'Deliveries',
+                    icon: Icons.list_alt_outlined,
+                    selectedIcon: Icons.list_alt_rounded,
+                    selected: selectedIndex == 0,
+                    onTap: () => onSelected(0),
+                  ),
+                  _NavigationItem(
+                    label: 'Route',
+                    icon: Icons.route_outlined,
+                    selectedIcon: Icons.route_rounded,
+                    selected: selectedIndex == 1,
+                    badgeCount: attentionCount,
+                    onTap: () => onSelected(1),
+                  ),
+                  _NavigationItem(
+                    label: 'Profile',
+                    icon: Icons.person_outline_rounded,
+                    selectedIcon: Icons.person_rounded,
+                    selected: selectedIndex == 2,
+                    onTap: () => onSelected(2),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -144,35 +150,31 @@ class _NavigationItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Design: active item is `text-primary font-bold` with no background pill.
     final color = selected ? AppTheme.brand : AppTheme.inkMuted;
 
     return Expanded(
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(26),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 180),
-          curve: Curves.easeOut,
-          margin: const EdgeInsets.symmetric(horizontal: 6, vertical: 7),
-          decoration: BoxDecoration(
-            color: selected ? AppTheme.brand.withValues(alpha: 0.12) : Colors.transparent,
-            borderRadius: BorderRadius.circular(26),
-          ),
+        child: SizedBox(
+          height: 72,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Badge(
                 isLabelVisible: badgeCount > 0,
                 label: Text('$badgeCount'),
-                child: Icon(selected ? selectedIcon : icon, color: color, size: 22),
+                child: Icon(selected ? selectedIcon : icon,
+                    color: color, size: 24),
               ),
-              const SizedBox(height: 3),
+              const SizedBox(height: 4),
               Text(
                 label,
                 style: TextStyle(
                   color: color,
-                  fontSize: 11,
-                  fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                  fontSize: 12,
+                  fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
+                  letterSpacing: 0.4,
                 ),
               ),
             ],
@@ -203,8 +205,10 @@ class EmptyState extends StatelessWidget {
     final theme = Theme.of(context);
     return LayoutBuilder(
       builder: (context, constraints) {
-        final compact = constraints.hasBoundedHeight && constraints.maxHeight < 200;
-        final minHeight = constraints.hasBoundedHeight ? constraints.maxHeight : 0.0;
+        final compact =
+            constraints.hasBoundedHeight && constraints.maxHeight < 200;
+        final minHeight =
+            constraints.hasBoundedHeight ? constraints.maxHeight : 0.0;
 
         return SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
@@ -222,16 +226,24 @@ class EmptyState extends StatelessWidget {
                         decoration: BoxDecoration(
                           color: AppTheme.brand.withValues(alpha: 0.10),
                           shape: BoxShape.circle,
-                          border: Border.all(color: AppTheme.brand.withValues(alpha: 0.24)),
+                          border: Border.all(
+                              color: AppTheme.brand.withValues(alpha: 0.24)),
                         ),
                         child: Icon(icon, size: 34, color: AppTheme.brand),
                       ),
                       const SizedBox(height: 16),
                     ],
-                    Text(title, style: theme.textTheme.titleMedium, textAlign: TextAlign.center),
+                    Text(title,
+                        style: theme.textTheme.titleMedium,
+                        textAlign: TextAlign.center),
                     SizedBox(height: compact ? 6 : 8),
-                    Text(message, style: theme.textTheme.bodyMedium, textAlign: TextAlign.center),
-                    if (action != null) ...[SizedBox(height: compact ? 12 : 18), action!],
+                    Text(message,
+                        style: theme.textTheme.bodyMedium,
+                        textAlign: TextAlign.center),
+                    if (action != null) ...[
+                      SizedBox(height: compact ? 12 : 18),
+                      action!
+                    ],
                   ],
                 ),
               ),

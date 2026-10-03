@@ -1,0 +1,44 @@
+# Render Blueprint - deploys services/ai-agent as a public web service.
+#
+# In Render: New -> Blueprint -> connect the GitHub repo. Render reads this
+# file and creates the service with the settings below.
+#
+# The frontend is configured to call this service's URL at build time via
+#   --dart-define=API_BASE_URL=<this service's URL>
+# in .github/workflows/deploy-pages.yml.
+services:
+  - type: web
+    name: delivery-ai-agent
+    runtime: node
+    plan: free
+    # The repo is a monorepo; this service lives in a subdirectory.
+    rootDir: services/ai-agent
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      # `node:sqlite` (used by src/data/database.js) needs Node 24 - it is
+      # unflagged there, which is what this service is verified against.
+      - key: NODE_VERSION
+        value: "24"
+      # Keep the assistant on the offline rules engine so a public endpoint
+      # cannot burn Anthropic credits. Set LLM_PROVIDER=anthropic and
+      # ANTHROPIC_API_KEY in the dashboard if you want real replies.
+      - key: LLM_PROVIDER
+        value: "mock"
+      - key: LLM_FALLBACK
+        value: "mock"
+      # Visitors can register and immediately see the seeded demo route.
+      - key: ALLOW_SIGNUP
+        value: "true"
+      - key: SEED_DRIVER_ID
+        value: "DRV-77"
+      - key: SEED_DRIVER_EMAIL
+        value: "driver@fleet.local"
+      # Intentionally NOT set here: a password would be committed to a public
+      # repo. Left unset, first boot generates one and prints it once in the
+      # Render logs. Set SEED_DRIVER_PASSWORD in the Render dashboard for a
+      # stable demo login.
+      - key: DATABASE_PATH
+        value: "data/delivery.db"

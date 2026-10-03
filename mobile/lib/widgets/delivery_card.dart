@@ -1,5 +1,3 @@
-import 'dart:ui' as ui;
-
 import 'package:flutter/material.dart';
 
 import '../core/app_theme.dart';
@@ -30,169 +28,191 @@ class DeliveryCard extends StatelessWidget {
     final note = delivery.primaryNote;
     final item = delivery.item;
 
+    // Design system: `rounded-2xl bg-surface-container` with a coloured
+    // left accent bar (`w-1`) that reads priority at a glance.
+    final Color accentColor = switch (delivery.status) {
+      DeliveryStatus.inTransit => AppTheme.brand,
+      DeliveryStatus.delivered => AppTheme.success,
+      DeliveryStatus.failed => AppTheme.warning,
+      DeliveryStatus.pending => AppTheme.surfaceHighest,
+    };
+
     return ClipRRect(
-      borderRadius: BorderRadius.circular(24),
-      child: BackdropFilter(
-        filter: ui.ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-        child: Container(
-          decoration: AppTheme.cardDecoration,
-          child: Material(
-            type: MaterialType.transparency,
-            child: InkWell(
-              onTap: onTap,
-              borderRadius: BorderRadius.circular(24),
-              child: Opacity(
-            opacity: finished ? 0.62 : 1,
-            child: Padding(
-              padding: const EdgeInsets.all(15),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _StopBadge(
-                    index: index + 1,
-                    status: delivery.status,
-                    active: active,
-                  ),
-                  const SizedBox(width: 13),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                delivery.customer.fullName,
-                                style: theme.textTheme.titleMedium?.copyWith(fontSize: 16.5),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            StatusChip(status: delivery.status, compact: true),
-                          ],
-                        ),
-                        if (item != null) ...[
-                          const SizedBox(height: 9),
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        decoration: AppTheme.cardDecoration.copyWith(
+          border: Border(left: BorderSide(color: accentColor, width: 4)),
+        ),
+        child: Material(
+          type: MaterialType.transparency,
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(16),
+            child: Opacity(
+              opacity: finished ? 0.62 : 1,
+              child: Padding(
+                padding: const EdgeInsets.all(15),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _StopBadge(
+                      index: index + 1,
+                      status: delivery.status,
+                      active: active,
+                    ),
+                    const SizedBox(width: 13),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
                           Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              ItemImage(item: item, width: 54, height: 54, radius: 15),
-                              const SizedBox(width: 11),
                               Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'DELIVERING',
-                                      style: theme.textTheme.labelSmall?.copyWith(
-                                        color: AppTheme.inkMuted,
-                                        letterSpacing: 0.6,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 2),
-                                    Text(
-                                      item.name,
-                                      style: theme.textTheme.bodyMedium
-                                          ?.copyWith(fontWeight: FontWeight.w700),
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    if (item.category.isNotEmpty)
-                                      Text(
-                                        item.category,
-                                        style: theme.textTheme.bodySmall,
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                  ],
+                                child: Text(
+                                  delivery.customer.fullName,
+                                  style: theme.textTheme.titleMedium
+                                      ?.copyWith(fontSize: 16.5),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ),
+                              const SizedBox(width: 8),
+                              StatusChip(
+                                  status: delivery.status, compact: true),
                             ],
                           ),
-                        ],
-                        const SizedBox(height: 4),
-                        Text(
-                          delivery.address.singleLine,
-                          style: theme.textTheme.bodySmall,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 11),
-                        Wrap(
-                          spacing: 6,
-                          runSpacing: 6,
-                          children: [
-                            MetaPill(
-                              icon: Icons.flag_outlined,
-                              label: relativeTime(delivery.eta),
-                              color: AppTheme.accent,
-                            ),
-                            MetaPill(
-                                icon: Icons.near_me_outlined,
-                                label: distance(delivery.distanceKm)),
-                            if (delivery.parcels > 1)
-                              MetaPill(
-                                icon: Icons.inventory_2_outlined,
-                                label: plural(delivery.parcels, 'parcel'),
-                              ),
-                            if (delivery.codAmount > 0)
-                              MetaPill(
-                                icon: Icons.payments_outlined,
-                                label: money(delivery.codAmount, delivery.currency),
-                                color: AppTheme.warning,
-                              ),
-                          ],
-                        ),
-                        if (note != null) ...[
-                          const SizedBox(height: 11),
-                          Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 10),
-                            decoration: BoxDecoration(
-                              color: note.fromCustomer
-                                  ? AppTheme.brand.withValues(alpha: 0.07)
-                                  : AppTheme.surfaceAlt,
-                              borderRadius: BorderRadius.circular(13),
-                              border: Border.all(
-                                color: note.fromCustomer
-                                    ? AppTheme.brand.withValues(alpha: 0.22)
-                                    : AppTheme.hairline,
-                              ),
-                            ),
-                            child: Row(
+                          if (item != null) ...[
+                            const SizedBox(height: 9),
+                            Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Icon(
-                                  note.fromCustomer
-                                      ? Icons.auto_awesome_outlined
-                                      : Icons.person_outline,
-                                  size: 15,
-                                  color:
-                                      note.fromCustomer ? AppTheme.brand : AppTheme.inkMuted,
-                                ),
-                                const SizedBox(width: 9),
+                                ItemImage(
+                                    item: item,
+                                    width: 54,
+                                    height: 54,
+                                    radius: 15),
+                                const SizedBox(width: 11),
                                 Expanded(
-                                  child: Text(
-                                    preview(note.text),
-                                    style: theme.textTheme.bodySmall?.copyWith(
-                                      color: AppTheme.ink.withValues(alpha: 0.82),
-                                      height: 1.35,
-                                    ),
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'DELIVERING',
+                                        style: theme.textTheme.labelSmall
+                                            ?.copyWith(
+                                          color: AppTheme.inkMuted,
+                                          letterSpacing: 0.6,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        item.name,
+                                        style: theme.textTheme.bodyMedium
+                                            ?.copyWith(
+                                                fontWeight: FontWeight.w700),
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      if (item.category.isNotEmpty)
+                                        Text(
+                                          item.category,
+                                          style: theme.textTheme.bodySmall,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                    ],
                                   ),
                                 ),
                               ],
                             ),
+                          ],
+                          const SizedBox(height: 4),
+                          Text(
+                            delivery.address.singleLine,
+                            style: theme.textTheme.bodySmall,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                           ),
+                          const SizedBox(height: 11),
+                          Wrap(
+                            spacing: 6,
+                            runSpacing: 6,
+                            children: [
+                              MetaPill(
+                                icon: Icons.flag_outlined,
+                                label: relativeTime(delivery.eta),
+                                color: AppTheme.accent,
+                              ),
+                              MetaPill(
+                                  icon: Icons.near_me_outlined,
+                                  label: distance(delivery.distanceKm)),
+                              if (delivery.parcels > 1)
+                                MetaPill(
+                                  icon: Icons.inventory_2_outlined,
+                                  label: plural(delivery.parcels, 'parcel'),
+                                ),
+                              if (delivery.codAmount > 0)
+                                MetaPill(
+                                  icon: Icons.payments_outlined,
+                                  label: money(
+                                      delivery.codAmount, delivery.currency),
+                                  color: AppTheme.warning,
+                                ),
+                            ],
+                          ),
+                          if (note != null) ...[
+                            const SizedBox(height: 11),
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 11, vertical: 10),
+                              decoration: BoxDecoration(
+                                color: note.fromCustomer
+                                    ? AppTheme.brand.withValues(alpha: 0.07)
+                                    : AppTheme.surfaceAlt,
+                                borderRadius: BorderRadius.circular(13),
+                                border: Border.all(
+                                  color: note.fromCustomer
+                                      ? AppTheme.brand.withValues(alpha: 0.22)
+                                      : AppTheme.hairline,
+                                ),
+                              ),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Icon(
+                                    note.fromCustomer
+                                        ? Icons.auto_awesome_outlined
+                                        : Icons.person_outline,
+                                    size: 15,
+                                    color: note.fromCustomer
+                                        ? AppTheme.brand
+                                        : AppTheme.inkMuted,
+                                  ),
+                                  const SizedBox(width: 9),
+                                  Expanded(
+                                    child: Text(
+                                      preview(note.text),
+                                      style:
+                                          theme.textTheme.bodySmall?.copyWith(
+                                        color: AppTheme.ink
+                                            .withValues(alpha: 0.82),
+                                        height: 1.35,
+                                      ),
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ],
-                      ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -203,7 +223,8 @@ class DeliveryCard extends StatelessWidget {
 }
 
 class _StopBadge extends StatelessWidget {
-  const _StopBadge({required this.index, required this.status, required this.active});
+  const _StopBadge(
+      {required this.index, required this.status, required this.active});
 
   final int index;
   final DeliveryStatus status;

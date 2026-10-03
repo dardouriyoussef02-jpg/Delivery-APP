@@ -1,10 +1,8 @@
-import 'dart:ui' as ui;
-
 import 'package:flutter/material.dart';
 
 import '../core/app_theme.dart';
 
-/// The standard elevated card: dark surface, hairline border, soft shadow.
+/// The standard card: solid `surface-container`, `rounded-2xl`, soft shadow.
 /// Used everywhere so the app feels like one coherent product.
 class SectionCard extends StatelessWidget {
   const SectionCard({
@@ -23,7 +21,7 @@ class SectionCard extends StatelessWidget {
   final EdgeInsetsGeometry padding;
   final VoidCallback? onTap;
 
-  /// Draws an orange tick beside the title for highlighted cards.
+  /// Draws a mint tick beside the title for highlighted cards.
   final bool accentBar;
 
   @override
@@ -49,7 +47,10 @@ class SectionCard extends StatelessWidget {
                 Expanded(
                   child: Text(
                     title!,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(fontSize: 15.5),
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleMedium
+                        ?.copyWith(fontSize: 15.5),
                   ),
                 ),
                 if (trailing != null) trailing!,
@@ -63,21 +64,18 @@ class SectionCard extends StatelessWidget {
     );
 
     return ClipRRect(
-      borderRadius: BorderRadius.circular(24),
-      child: BackdropFilter(
-        filter: ui.ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-        child: Container(
-          decoration: AppTheme.cardDecoration,
-          child: Material(
-            type: MaterialType.transparency,
-            child: onTap == null
-                ? content
-                : InkWell(
-                    onTap: onTap,
-                    borderRadius: BorderRadius.circular(24),
-                    child: content,
-                  ),
-              ),
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        decoration: AppTheme.cardDecoration,
+        child: Material(
+          type: MaterialType.transparency,
+          child: onTap == null
+              ? content
+              : InkWell(
+                  onTap: onTap,
+                  borderRadius: BorderRadius.circular(16),
+                  child: content,
+                ),
         ),
       ),
     );
@@ -86,7 +84,8 @@ class SectionCard extends StatelessWidget {
 
 /// Small pill used for meta facts (distance, parcels, ETA...).
 class MetaPill extends StatelessWidget {
-  const MetaPill({super.key, required this.icon, required this.label, this.color});
+  const MetaPill(
+      {super.key, required this.icon, required this.label, this.color});
 
   final IconData icon;
   final String label;

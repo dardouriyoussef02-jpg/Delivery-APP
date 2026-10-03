@@ -213,14 +213,14 @@ class _RouteTile extends StatelessWidget {
           Expanded(
             child: InkWell(
               onTap: onTap,
-              borderRadius: BorderRadius.circular(22),
+              borderRadius: BorderRadius.circular(16),
               child: Container(
                 margin: EdgeInsets.only(bottom: isLast ? 0 : 10),
                 padding: const EdgeInsets.all(13),
                 decoration: BoxDecoration(
                   color: AppTheme.surface.withValues(alpha: 0.82),
-                  borderRadius: BorderRadius.circular(22),
-                  border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: AppTheme.hairline),
                   boxShadow: AppTheme.cardShadow,
                 ),
                 child: Row(

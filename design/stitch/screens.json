@@ -1,0 +1,48 @@
+{
+    "screens":  [
+                    {
+                        "deviceType":  "MOBILE",
+                        "height":  "3132",
+                        "htmlCode":  {
+                                         "downloadUrl":  "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzAwMDY1Y2VlNTQxMjIwOTUwMzU2Y2JjYjdkMmVlMzk4EgsSBxCcoeCwhx0YAZIBJAoKcHJvamVjdF9pZBIWQhQxODE4MzQ4MTc3Nzc5Mjc1NzE5OA\u0026filename=\u0026opi=89354086",
+                                         "mimeType":  "text/html",
+                                         "name":  "projects/18183481777792757198/screens/106865b03e2747699429431860839cb4/fileEntries/html"
+                                     },
+                        "name":  "projects/18183481777792757198/screens/106865b03e2747699429431860839cb4",
+                        "screenshot":  {
+                                           "downloadUrl":  "https://lh3.googleusercontent.com/aida/AEtjO1VfYydFKxwpLfYwQwiD9QiOtPCP13HY01Gcz67Ni0hgoUnNSa7wENMrqgOTmRBnd02FH_1-D4JM2j3c7JlaGszOab8rjfk6MYhFoMU9FGQhzUaj8e8sfI3PeUfoB1qstS5aS8VjPTA4qFAUjXTnJNRwNbgB5gnWbkOxovT7IG9HCfMU_IUQqAKHy0qkqaPWeKjCooaeK7_f6AAqLBNXzP0sXSBti1UaPYdNTj9NWrKd4BUofzl8s7QcZXBH",
+                                           "name":  "projects/18183481777792757198/screens/106865b03e2747699429431860839cb4/fileEntries/screenshot"
+                                       },
+                        "title":  "Shift \u0026 Queue Dashboard",
+                        "width":  "780"
+                    },
+                    {
+                        "height":  "512",
+                        "htmlCode":  {
+                                         "downloadUrl":  "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzAwMDY1Y2VlNTAzZmIzYmUwMjNiYzBjN2EwMDUwMmVmEgsSBxCcoeCwhx0YAZIBJAoKcHJvamVjdF9pZBIWQhQxODE4MzQ4MTc3Nzc5Mjc1NzE5OA\u0026filename=\u0026opi=89354086",
+                                         "mimeType":  "image/svg+xml",
+                                         "name":  "projects/18183481777792757198/screens/2ac37ea8739f4870ae3d4089fc15b23d/fileEntries/html"
+                                     },
+                        "name":  "projects/18183481777792757198/screens/2ac37ea8739f4870ae3d4089fc15b23d",
+                        "screenshot":  {
+                                           "downloadUrl":  "https://lh3.googleusercontent.com/aida/AEtjO1XODPvCoFBahzauzz1XdM508V8ReDhavHfVUWGdx5joS9PcJ-Dp4mtFkOFlG-7M5lJ_o9ysx0M1Aj9fStP9ajXmwAcmRd51RWQ5VgYTOv9xYXGg1hxKzYv0fdcwti2xSf-O0oqB1bZ993wpg4XVfRah1pFdR-KN34hRch9doXf8ak-Kmz-TIDWyN09riQ7N_y2g1qmwL2jsi_xcqc59w_90B0a8sAjRbKlMww6ll2yhhKappELOcuNR5kR4",
+                                           "name":  "projects/18183481777792757198/screens/2ac37ea8739f4870ae3d4089fc15b23d/fileEntries/screenshot"
+                                       },
+                        "title":  "ShiftFlow Logo",
+                        "width":  "512"
+                    },
+                    {
+                        "height":  "1024",
+                        "htmlCode":  {
+
+                                     },
+                        "name":  "projects/18183481777792757198/screens/5cca008f61dd499fac8cd82603091e6d",
+                        "screenshot":  {
+                                           "downloadUrl":  "https://lh3.googleusercontent.com/aida/AEtjO1WpNKNS599inURwdOJAk9ORlB9ZfGXiJHyPVREVPLEaXIkjlB-olUvUYt5kGwp5DjdrhdPcspeLsNcPYTv5jrws2Ycfz7am7ku4R9OAgsdEtUHmnbXyNLgeCvcriBM9nh8YFvIJiq6SPIGV2LZx3DS8oussBZDkk6E3jiBOeIZToVSkdV2Ox0_bUamg9cQ6KpcbbFiXK-2nQQyt_Z32vXXN9VPwoQ3BA_kA_1GoZv5BPrv_fkfpgz6Qww0",
+                                           "name":  "projects/18183481777792757198/screens/5cca008f61dd499fac8cd82603091e6d/fileEntries/screenshot"
+                                       },
+                        "title":  "Close-up avatar headshot photo of a professional male delivery courier driver wearing a dark navy cap and jacket, friendly warm expression, neutral dark background, soft realistic lighting.",
+                        "width":  "1024"
+                    }
+                ]
+}

@@ -1,0 +1,203 @@
+{
+    "createTime":  "2026-10-03T11:29:54.519987Z",
+    "designTheme":  {
+                        "bodyFont":  "INTER",
+                        "bodyFontFamily":  "Inter",
+                        "colorMode":  "DARK",
+                        "colorVariant":  "FIDELITY",
+                        "customColor":  "#10b981",
+                        "designMd":  "---\nname: ShiftFlow Courier UI\ncolors:\n  surface: \u0027#0f141b\u0027\n  surface-dim: \u0027#0f141b\u0027\n  surface-bright: \u0027#343941\u0027\n  surface-container-lowest: \u0027#090f15\u0027\n  surface-container-low: \u0027#171c23\u0027\n  surface-container: \u0027#1b2027\u0027\n  surface-container-high: \u0027#252a32\u0027\n  surface-container-highest: \u0027#30353d\u0027\n  on-surface: \u0027#dee2ec\u0027\n  on-surface-variant: \u0027#bbcabf\u0027\n  inverse-surface: \u0027#dee2ec\u0027\n  inverse-on-surface: \u0027#2c3138\u0027\n  outline: \u0027#86948a\u0027\n  outline-variant: \u0027#3c4a42\u0027\n  surface-tint: \u0027#4edea3\u0027\n  primary: \u0027#4edea3\u0027\n  on-primary: \u0027#003824\u0027\n  primary-container: \u0027#10b981\u0027\n  on-primary-container: \u0027#00422b\u0027\n  inverse-primary: \u0027#006c49\u0027\n  secondary: \u0027#7bd0ff\u0027\n  on-secondary: \u0027#00354a\u0027\n  secondary-container: \u0027#00a6e0\u0027\n  on-secondary-container: \u0027#00374d\u0027\n  tertiary: \u0027#ffb95f\u0027\n  on-tertiary: \u0027#472a00\u0027\n  tertiary-container: \u0027#e29100\u0027\n  on-tertiary-container: \u0027#523200\u0027\n  error: \u0027#ffb4ab\u0027\n  on-error: \u0027#690005\u0027\n  error-container: \u0027#93000a\u0027\n  on-error-container: \u0027#ffdad6\u0027\n  primary-fixed: \u0027#6ffbbe\u0027\n  primary-fixed-dim: \u0027#4edea3\u0027\n  on-primary-fixed: \u0027#002113\u0027\n  on-primary-fixed-variant: \u0027#005236\u0027\n  secondary-fixed: \u0027#c4e7ff\u0027\n  secondary-fixed-dim: \u0027#7bd0ff\u0027\n  on-secondary-fixed: \u0027#001e2c\u0027\n  on-secondary-fixed-variant: \u0027#004c69\u0027\n  tertiary-fixed: \u0027#ffddb8\u0027\n  tertiary-fixed-dim: \u0027#ffb95f\u0027\n  on-tertiary-fixed: \u0027#2a1700\u0027\n  on-tertiary-fixed-variant: \u0027#653e00\u0027\n  background: \u0027#0f141b\u0027\n  on-background: \u0027#dee2ec\u0027\n  surface-variant: \u0027#30353d\u0027\ntypography:\n  display-metric:\n    fontFamily: Inter\n    fontSize: 36px\n    fontWeight: \u0027700\u0027\n    lineHeight: 44px\n    letterSpacing: -0.03em\n  headline-lg:\n    fontFamily: Inter\n    fontSize: 28px\n    fontWeight: \u0027700\u0027\n    lineHeight: 36px\n    letterSpacing: -0.02em\n  headline-md:\n    fontFamily: Inter\n    fontSize: 22px\n    fontWeight: \u0027600\u0027\n    lineHeight: 28px\n    letterSpacing: -0.01em\n  headline-sm:\n    fontFamily: Inter\n    fontSize: 18px\n    fontWeight: \u0027600\u0027\n    lineHeight: 24px\n    letterSpacing: 0em\n  body-lg:\n    fontFamily: Inter\n    fontSize: 16px\n    fontWeight: \u0027500\u0027\n    lineHeight: 24px\n    letterSpacing: 0em\n  body-md:\n    fontFamily: Inter\n    fontSize: 14px\n    fontWeight: \u0027400\u0027\n    lineHeight: 20px\n    letterSpacing: 0em\n  body-sm:\n    fontFamily: Inter\n    fontSize: 12px\n    fontWeight: \u0027400\u0027\n    lineHeight: 16px\n    letterSpacing: 0.01em\n  label-lg:\n    fontFamily: Inter\n    fontSize: 14px\n    fontWeight: \u0027600\u0027\n    lineHeight: 18px\n    letterSpacing: 0.02em\n  label-md:\n    fontFamily: Inter\n    fontSize: 12px\n    fontWeight: \u0027600\u0027\n    lineHeight: 16px\n    letterSpacing: 0.04em\n  label-badge:\n    fontFamily: Inter\n    fontSize: 11px\n    fontWeight: \u0027700\u0027\n    lineHeight: 14px\n    letterSpacing: 0.06em\nrounded:\n  sm: 0.25rem\n  DEFAULT: 0.5rem\n  md: 0.75rem\n  lg: 1rem\n  xl: 1.5rem\n  full: 9999px\nspacing:\n  gutter: 1rem\n  margin: 1rem\n  space-xs: 0.25rem\n  space-sm: 0.5rem\n  space-md: 1rem\n  space-lg: 1.5rem\n  space-xl: 2rem\n---\n\n## Brand \u0026 Style\n\nThis design system is tailored specifically for high-tempo field couriers and dispatch drivers navigating complex urban routes under varying light conditions. The brand aesthetic merges utilitarian cockpit ergonomics with high-contrast digital precision.\n\n### Personality \u0026 Emotional Stance\n- **Decisive \u0026 Uncompromising:** The interface eliminates visual noise, presenting operational data with absolute clarity to facilitate split-second decision-making.\n- **Vigilant \u0026 Reassuring:** Uses unambiguous chromatic signals (emerald, amber, cyan) to project control, on-time certainty, and route safety.\n- **Athletic \u0026 Ergonomic:** Surfaces feel engineered, responsive, and primed for rapid single-handed thumb interactions on phone mounts or handheld terminals.\n\n### Design Movement: Tactical Dark Modernism\nA hybrid of **Instrument-Grade Functionalism** and **Subtle Translucent Depth (Glassmorphism)**. Low-reflectance slate and zinc background tiers (#0D1117, #161B22) prevent eye strain during dusk, dawn, and night shifts, while luminous, high-energy signal accents guide peripheral glances. Micro-borders and translucent card backdrops separate stacked layers without muddying contrast.\n\n## Colors\n\nThe palette is engineered for extreme readability against deep dark backgrounds, maximizing peripheral recognition while driving or walking.\n\n### Core Signal Roles\n- **Primary (`#10B981` / Emerald 500, with `#22C55E` / Green 500 accent):** Operational success, active shift status, completed deliveries, and real-time earnings telemetry.\n- **Secondary (`#38BDF8` / Sky 400 \u0026 `#2563EB` / Blue 600):** Turn-by-turn routing cues, active GPS navigation overlays, and primary dispatch interaction triggers.\n- **Tertiary (`#F59E0B` / Amber 500):** Urgent batch timers, expiring pickup offers, high-priority notifications, and delivery SLA warnings.\n- **Danger (`#EF4444` / Red 500):** Route blocks, failed drops, cancel actions, and emergency support.\n\n### Dark Tone Scale\n- **Canvas Base (`#0D1117`):** The foundational substrate representing the deepest depth layer.\n- **Surface Elevation 1 (`#161B22`):** Primary card bodies and grouped feed containers.\n- **Surface Elevation 2 (`#21262D`):** Elevated modals, action sheets, and floating cockpit controls.\n- **Subtle Stroke (`rgba(240, 246, 252, 0.1)`):** Clean structural delineator separating adjacent cards without heavy solid lines.\n- **Text High-Emphasis (`#F0F6FC`):** Primary metrics, addresses, and navigation heads.\n- **Text Medium-Emphasis (`#8B949E`):** Secondary meta-tags, sub-labels, and route notes.\n\n## Typography\n\nThe type system prioritizes instantaneous legibility at arm\u0027s length (dashboard mount distance). `Inter` provides neutral geometry, distinct numerical shapes, and tabular figures crucial for dynamic stop timers, pay estimates, and distances.\n\n### Typography Guidelines\n- **Tabular Figures:** Always apply `font-feature-settings: \"tnum\" 1` to live counters, earnings, eta timers, and distance readouts to eliminate horizontal jitter during live shifts.\n- **Metric Prominence:** The `display-metric` token is reserved strictly for high-priority numbers (payout totals, remaining minutes, next maneuver distances).\n- **Label Badging:** All micro status labels use uppercase styling with generous tracking (`0.06em`) to ensure legibility when vibrating in vehicle docks.\n\n## Layout \u0026 Spacing\n\nA mobile-first dynamic fluid container optimized for portrait orientations and rugged vehicle mounts.\n\n### Grid \u0026 Ergonomic Safe Zones\n- **Bottom-Heavy Thumb Reach:** Interactive buttons, turn confirmation sliders, and order actions live within the lower 40% of the viewport (the primary thumb arc).\n- **Upper Cockpit Zone:** The upper 25% of the screen is dedicated to persistent navigation heads, glanceable status chips, and emergency contact triggers.\n- **Gutters \u0026 Margins:** Default screen margin is `1rem` (16px) with an inner element gap rhythm strictly based on an 8pt baseline (`0.5rem`, `1rem`, `1.5rem`).\n- **Touch Target Threshold:** All tap regions possess a strict minimum dimension of 48×48px, expanding to 56px height for primary delivery progression controls.\n\n## Elevation \u0026 Depth\n\nVisual hierarchy uses a hybrid of structured tonal surfaces and controlled glassmorphic sheen rather than deep diffuse drop shadows, preserving clarity in direct sunlight or dark in-car environments.\n\n### Depth Architecture\n- **Level 0 (Canvas Base):** Solid `#0D1117`. Ground state for map layers and full-screen data views.\n- **Level 1 (Standard Cards \u0026 Tiles):** Solid `#161B22` with a 1px border of `rgba(240, 246, 252, 0.08)`. Used for order batch cards and route lists.\n- **Level 2 (Floating Cockpit HUD \u0026 Overlays):** Translucent `#161B22` at 85% opacity with `backdrop-filter: blur(16px)` and a 1px stroke of `rgba(56, 189, 248, 0.2)` when navigating, or `rgba(240, 246, 252, 0.12)` default.\n- **Level 3 (Modal Sheets \u0026 Alert Drawers):** `#21262D` elevated with an ambient glow: `0 -8px 24px rgba(0, 0, 0, 0.5)`.\n\n### Border Highlight Philosophy\nTo avoid flat visual deadness, top edges of elevated cards may employ a subtle 1px inner highlight (`inset 0 1px 0 rgba(255, 255, 255, 0.08)`) simulating an overhead cockpit task light.\n\n## Shapes\n\nThe design uses balanced `0.5rem` (8px) base rounding, scaling to `1rem` (16px) on cards and bottom sheets. This level produces a dependable, modern tool aesthetic—distinctly less playful than full pill UI, but soft enough to absorb quick visual scanning without harsh corners.\n\n### Shape Hierarchy\n- **Action Buttons \u0026 Inputs:** 12px (`rounded-lg` equivalent) border radius for ergonomic tactility.\n- **Cards, Sheets \u0026 Overlays:** 16px (`rounded-lg` equivalent) radius to package dense data clusters into cohesive modules.\n- **Status Pills \u0026 Counters:** 9999px (full pill) exclusively for order statuses (`READY`, `EN ROUTE`, `DELAYED`) and numerical alert chips to differentiate metadata from tappable cards.\n\n## Components\n\n### 1. Primary Action \u0026 Swipe Controls\n- **\"Swipe to Complete\" Slider:** A full-width 56px track in `#21262D` with an emerald `#10B981` thumb slider to prevent accidental pockets or tap errors when finishing drops.\n- **Direct Action Buttons:** Solid `#10B981` or `#2563EB` fills with high-contrast `#FFFFFF` or `#0D1117` bold typography. Height is fixed at 52px minimum with full-width orientation in mobile viewports.\n\n### 2. Status Chips \u0026 Badges\n- **Active / En Route:** Background `rgba(16, 185, 129, 0.12)`, text `#10B981`, border `1px solid rgba(16, 185, 129, 0.3)`.\n- **Urgent / Expiring Batch:** Background `rgba(245, 158, 11, 0.12)`, text `#F59E0B`, border `1px solid rgba(245, 158, 11, 0.3)`.\n- **Navigation Cue:** Background `rgba(56, 189, 248, 0.12)`, text `#38BDF8`, border `1px solid rgba(56, 189, 248, 0.3)`.\n\n### 3. Delivery Stop Cards\n- Encased in `#161B22` with a 16px radius and 16px internal padding.\n- Employs a dual-column layout: Left column features bold sequence indicators (e.g., \"STOP 3 of 8\") and customer ETA; right column houses 48px one-touch quick actions (Call Customer, Navigation Redirect).\n- Progress states are indicated via a 3px vertical accent border running along the card\u0027s left margin (Emerald = Next Stop, Zinc = Pending, Amber = Priority).\n\n### 4. Interactive Lists \u0026 Feed Items\n- Divided by 1px rules of `rgba(240, 246, 252, 0.06)` with zero margin overlap.\n- Ripple and active press feedback states employ instant brightness shift (`rgba(255, 255, 255, 0.05)`) with zero layout lag.\n\n### 5. Input Fields \u0026 Search Bars\n- Background `#21262D`, text `#F0F6FC`, border `1px solid rgba(240, 246, 252, 0.12)`.\n- Min height 48px. Clear buttons and barcode scan triggers are pinned at a minimum 44×44px hit-box to the right edge.",
+                        "font":  "INTER",
+                        "headlineFont":  "INTER",
+                        "headlineFontFamily":  "Inter",
+                        "labelFont":  "INTER",
+                        "labelFontFamily":  "Inter",
+                        "namedColors":  {
+                                            "background":  "#0f141b",
+                                            "error":  "#ffb4ab",
+                                            "error_container":  "#93000a",
+                                            "inverse_on_surface":  "#2c3138",
+                                            "inverse_primary":  "#006c49",
+                                            "inverse_surface":  "#dee2ec",
+                                            "on_background":  "#dee2ec",
+                                            "on_error":  "#690005",
+                                            "on_error_container":  "#ffdad6",
+                                            "on_primary":  "#003824",
+                                            "on_primary_container":  "#00422b",
+                                            "on_primary_fixed":  "#002113",
+                                            "on_primary_fixed_variant":  "#005236",
+                                            "on_secondary":  "#00354a",
+                                            "on_secondary_container":  "#00374d",
+                                            "on_secondary_fixed":  "#001e2c",
+                                            "on_secondary_fixed_variant":  "#004c69",
+                                            "on_surface":  "#dee2ec",
+                                            "on_surface_variant":  "#bbcabf",
+                                            "on_tertiary":  "#472a00",
+                                            "on_tertiary_container":  "#523200",
+                                            "on_tertiary_fixed":  "#2a1700",
+                                            "on_tertiary_fixed_variant":  "#653e00",
+                                            "outline":  "#86948a",
+                                            "outline_variant":  "#3c4a42",
+                                            "primary":  "#4edea3",
+                                            "primary_container":  "#10b981",
+                                            "primary_fixed":  "#6ffbbe",
+                                            "primary_fixed_dim":  "#4edea3",
+                                            "secondary":  "#7bd0ff",
+                                            "secondary_container":  "#00a6e0",
+                                            "secondary_fixed":  "#c4e7ff",
+                                            "secondary_fixed_dim":  "#7bd0ff",
+                                            "surface":  "#0f141b",
+                                            "surface_bright":  "#343941",
+                                            "surface_container":  "#1b2027",
+                                            "surface_container_high":  "#252a32",
+                                            "surface_container_highest":  "#30353d",
+                                            "surface_container_low":  "#171c23",
+                                            "surface_container_lowest":  "#090f15",
+                                            "surface_dim":  "#0f141b",
+                                            "surface_tint":  "#4edea3",
+                                            "surface_variant":  "#30353d",
+                                            "tertiary":  "#ffb95f",
+                                            "tertiary_container":  "#e29100",
+                                            "tertiary_fixed":  "#ffddb8",
+                                            "tertiary_fixed_dim":  "#ffb95f"
+                                        },
+                        "overrideNeutralColor":  "#161b22",
+                        "overridePrimaryColor":  "#10b981",
+                        "overrideSecondaryColor":  "#38bdf8",
+                        "overrideTertiaryColor":  "#f59e0b",
+                        "roundness":  "ROUND_EIGHT",
+                        "spacing":  {
+                                        "gutter":  "1rem",
+                                        "margin":  "1rem",
+                                        "space-lg":  "1.5rem",
+                                        "space-md":  "1rem",
+                                        "space-sm":  "0.5rem",
+                                        "space-xl":  "2rem",
+                                        "space-xs":  "0.25rem"
+                                    },
+                        "spacingScale":  2,
+                        "typography":  {
+                                           "body-lg":  {
+                                                           "fontFamily":  "Inter",
+                                                           "fontSize":  "16px",
+                                                           "fontWeight":  "500",
+                                                           "letterSpacing":  "0em",
+                                                           "lineHeight":  "24px"
+                                                       },
+                                           "body-md":  {
+                                                           "fontFamily":  "Inter",
+                                                           "fontSize":  "14px",
+                                                           "fontWeight":  "400",
+                                                           "letterSpacing":  "0em",
+                                                           "lineHeight":  "20px"
+                                                       },
+                                           "body-sm":  {
+                                                           "fontFamily":  "Inter",
+                                                           "fontSize":  "12px",
+                                                           "fontWeight":  "400",
+                                                           "letterSpacing":  "0.01em",
+                                                           "lineHeight":  "16px"
+                                                       },
+                                           "display-metric":  {
+                                                                  "fontFamily":  "Inter",
+                                                                  "fontSize":  "36px",
+                                                                  "fontWeight":  "700",
+                                                                  "letterSpacing":  "-0.03em",
+                                                                  "lineHeight":  "44px"
+                                                              },
+                                           "headline-lg":  {
+                                                               "fontFamily":  "Inter",
+                                                               "fontSize":  "28px",
+                                                               "fontWeight":  "700",
+                                                               "letterSpacing":  "-0.02em",
+                                                               "lineHeight":  "36px"
+                                                           },
+                                           "headline-md":  {
+                                                               "fontFamily":  "Inter",
+                                                               "fontSize":  "22px",
+                                                               "fontWeight":  "600",
+                                                               "letterSpacing":  "-0.01em",
+                                                               "lineHeight":  "28px"
+                                                           },
+                                           "headline-sm":  {
+                                                               "fontFamily":  "Inter",
+                                                               "fontSize":  "18px",
+                                                               "fontWeight":  "600",
+                                                               "letterSpacing":  "0em",
+                                                               "lineHeight":  "24px"
+                                                           },
+                                           "label-badge":  {
+                                                               "fontFamily":  "Inter",
+                                                               "fontSize":  "11px",
+                                                               "fontWeight":  "700",
+                                                               "letterSpacing":  "0.06em",
+                                                               "lineHeight":  "14px"
+                                                           },
+                                           "label-lg":  {
+                                                            "fontFamily":  "Inter",
+                                                            "fontSize":  "14px",
+                                                            "fontWeight":  "600",
+                                                            "letterSpacing":  "0.02em",
+                                                            "lineHeight":  "18px"
+                                                        },
+                                           "label-md":  {
+                                                            "fontFamily":  "Inter",
+                                                            "fontSize":  "12px",
+                                                            "fontWeight":  "600",
+                                                            "letterSpacing":  "0.04em",
+                                                            "lineHeight":  "16px"
+                                                        }
+                                       }
+                    },
+    "deviceType":  "MOBILE",
+    "metadata":  {
+                     "userRole":  "OWNER"
+                 },
+    "name":  "projects/18183481777792757198",
+    "origin":  "STITCH",
+    "projectType":  "TEXT_TO_UI_PRO",
+    "screenInstances":  [
+                            {
+                                "height":  1565,
+                                "id":  "106865b03e2747699429431860839cb4",
+                                "label":  "Generating Screen...",
+                                "sourceScreen":  "projects/18183481777792757198/screens/106865b03e2747699429431860839cb4",
+                                "width":  390,
+                                "x":  2390,
+                                "y":  -28
+                            },
+                            {
+                                "height":  504,
+                                "id":  "2ac37ea8739f4870ae3d4089fc15b23d",
+                                "label":  "Generating Image...",
+                                "sourceScreen":  "projects/18183481777792757198/screens/2ac37ea8739f4870ae3d4089fc15b23d",
+                                "width":  512,
+                                "x":  1242,
+                                "y":  -12
+                            },
+                            {
+                                "height":  512,
+                                "id":  "5cca008f61dd499fac8cd82603091e6d",
+                                "label":  "Generating Image...",
+                                "sourceScreen":  "projects/18183481777792757198/screens/5cca008f61dd499fac8cd82603091e6d",
+                                "width":  512,
+                                "x":  1814
+                            },
+                            {
+                                "height":  540,
+                                "id":  "assets_3134b64e715a468c9c816a1d5c7cf2a7",
+                                "sourceAsset":  "assets/3134b64e715a468c9c816a1d5c7cf2a7",
+                                "type":  "DESIGN_SYSTEM_INSTANCE",
+                                "width":  960,
+                                "x":  268,
+                                "y":  -28
+                            }
+                        ],
+    "thumbnailScreenshot":  {
+                                "downloadUrl":  "https://lh3.googleusercontent.com/aida/AEtjO1XODPvCoFBahzauzz1XdM508V8ReDhavHfVUWGdx5joS9PcJ-Dp4mtFkOFlG-7M5lJ_o9ysx0M1Aj9fStP9ajXmwAcmRd51RWQ5VgYTOv9xYXGg1hxKzYv0fdcwti2xSf-O0oqB1bZ993wpg4XVfRah1pFdR-KN34hRch9doXf8ak-Kmz-TIDWyN09riQ7N_y2g1qmwL2jsi_xcqc59w_90B0a8sAjRbKlMww6ll2yhhKappELOcuNR5kR4",
+                                "name":  "projects/18183481777792757198/screens/2ac37ea8739f4870ae3d4089fc15b23d/fileEntries/screenshot"
+                            },
+    "title":  "Delivery Driver App Interface",
+    "updateTime":  "2026-10-03T11:56:08.898979Z",
+    "visibility":  "PRIVATE"
+}

@@ -4,96 +4,132 @@ import 'package:flutter/services.dart';
 
 import '../models/delivery.dart';
 
-/// Shared warm-glass design tokens for the delivery driver app.
+/// ShiftFlow Courier UI design tokens.
 ///
-/// Screens should pull colours from these tokens instead of hard-coding them,
-/// so the whole product stays consistent and can be re-skinned from here.
+/// Ported verbatim from the Google Stitch project "Delivery Driver App
+/// Interface" (ShiftFlow Courier UI design system). Screens pull colours from
+/// these tokens instead of hard-coding them, so the whole product can be
+/// re-skinned from here.
+///
+/// Source: `design/project.json` -> `designTheme.namedColors` / `designMd`.
 class AppTheme {
   AppTheme._();
 
   // ------------------------------------------------------------------ canvas
-  /// Warm near-black canvas.
-  static const Color bg = Color(0xFF0D0D0F);
+  /// Deep slate canvas (`background` / `surface` / `surface-dim`).
+  static const Color bg = Color(0xFF0F141B);
 
-  /// Translucent charcoal glass surface.
-  static const Color surface = Color(0xCC1A1716);
+  /// Card surface (`surface-container`).
+  static const Color surface = Color(0xFF1B2027);
 
-  /// Nested surface: inputs, note blocks, inner tiles.
-  static const Color surfaceAlt = Color(0x99231F1D);
+  /// Nested surface: inputs, note blocks, inner tiles (`surface-container-low`).
+  static const Color surfaceAlt = Color(0xFF171C23);
 
-  /// Raised surface: dialogs, snackbars, chips.
-  static const Color surfaceHigh = Color(0xFF2C2623);
+  /// Raised surface: dialogs, snackbars, chips (`surface-container-high`).
+  static const Color surfaceHigh = Color(0xFF252A32);
 
-  /// Subtle translucent white separators and glass borders.
-  static const Color hairline = Color(0x1FFFFFFF);
+  /// Highest surface: step badges, inert tracks (`surface-container-highest`).
+  static const Color surfaceHighest = Color(0xFF30353D);
+
+  /// Lowest surface: inset pill bars (`surface-container-lowest`).
+  static const Color surfaceLowest = Color(0xFF090F15);
+
+  /// Bright surface used for `surface-bright`.
+  static const Color surfaceBright = Color(0xFF343941);
+
+  /// Hairline separators and card borders (`outline-variant`).
+  static const Color hairline = Color(0xFF3C4A42);
 
   // -------------------------------------------------------------------- text
-  static const Color ink = Color(0xFFFFFFFF);
-  static const Color inkMuted = Color(0xFFB8B8B8);
-  static const Color inkFaint = Color(0xFF858181);
+  static const Color ink = Color(0xFFDEE2EC);
+  static const Color inkMuted = Color(0xFFBBCABF);
+  static const Color inkFaint = Color(0xFF86948A);
 
   // ------------------------------------------------------------------ brand
-  /// Warm orange: the signature action color.
-  static const Color brand = Color(0xFFFF9F1C);
+  /// Mint green: the signature action colour (`primary`).
+  static const Color brand = Color(0xFF4EDEA3);
 
-  /// Deeper orange for gradient edges and pressed states.
-  static const Color brandDark = Color(0xFFF97316);
+  /// Deeper mint for gradient edges and pressed states (`primary-container`).
+  static const Color brandDark = Color(0xFF10B981);
 
-  /// High-contrast foreground for primary orange actions.
-  static const Color onBrand = Color(0xFFFFFFFF);
+  /// High-contrast foreground for primary mint actions (`on-primary`).
+  static const Color onBrand = Color(0xFF003824);
 
-  /// Secondary warm accent used for AI and highlighted route details.
-  static const Color accent = Color(0xFFF97316);
+  /// Sky blue accent for informational and secondary actions (`secondary`).
+  static const Color accent = Color(0xFF7BD0FF);
+
+  /// Deeper blue used for secondary containers (`secondary-container`).
+  static const Color accentDark = Color(0xFF00A6E0);
+
+  /// High-contrast foreground for secondary blue actions (`on-secondary`).
+  static const Color onAccent = Color(0xFF00354A);
 
   // --------------------------------------------------------------- semantic
-  static const Color success = Color(0xFF4ADE80);
-  static const Color warning = Color(0xFFFFB020);
-  static const Color danger = Color(0xFFFF6B6B);
+  /// Completed / delivered (`primary-fixed`, a touch brighter than `brand`).
+  static const Color success = Color(0xFF6FFBBE);
+
+  /// Amber warning and customer notes (`tertiary`).
+  static const Color warning = Color(0xFFFFB95F);
+
+  /// Deeper amber for tertiary containers (`tertiary-container`).
+  static const Color warningDark = Color(0xFFE29100);
+
+  /// Error red (`error`).
+  static const Color danger = Color(0xFFFFB4AB);
 
   // -------------------------------------------------------------- gradients
-  /// Signature orange gradient for brand moments.
+  /// Signature mint gradient for brand moments (primary -> primary-container).
   static const LinearGradient brandGradient = LinearGradient(
     colors: [brand, brandDark],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
 
-  /// Subtle background wash used behind hero areas.
+  /// Slate wash used behind hero areas.
   static const LinearGradient heroGradient = LinearGradient(
-    colors: [Color(0xFF3A2518), Color(0xFF171413), Color(0xFF111112)],
+    colors: [surface, surfaceAlt, bg],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
 
-  /// Radial orange bloom, layered behind heroes and key callouts.
+  /// The design's shift-progress fill: blue -> mint.
+  static const LinearGradient progressGradient = LinearGradient(
+    colors: [accent, brand],
+    begin: Alignment.centerLeft,
+    end: Alignment.centerRight,
+  );
+
+  /// Mint bloom, layered behind heroes and key callouts.
   static RadialGradient bloom({double alpha = 0.28}) => RadialGradient(
         center: Alignment.topRight,
         radius: 1.15,
-        colors: [brand.withValues(alpha: alpha), brandDark.withValues(alpha: alpha * 0.35), Colors.transparent],
+        colors: [
+          brand.withValues(alpha: alpha),
+          brandDark.withValues(alpha: alpha * 0.35),
+          Colors.transparent
+        ],
       );
 
   // --------------------------------------------------------------- elevation
   static List<BoxShadow> get cardShadow => [
         BoxShadow(
-          color: Colors.black.withValues(alpha: 0.32),
-          blurRadius: 22,
-          offset: const Offset(0, 10),
+          color: Colors.black.withValues(alpha: 0.45),
+          blurRadius: 20,
+          offset: const Offset(0, 8),
         ),
       ];
 
-    /// Shared translucent card treatment used across the app.
+  /// Shared card treatment used across the app (`rounded-2xl`, solid surface).
   static BoxDecoration get cardDecoration => BoxDecoration(
-      color: surface.withValues(alpha: 0.86),
-      borderRadius: BorderRadius.circular(24),
-      border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
+        color: surface,
+        borderRadius: BorderRadius.circular(16),
         boxShadow: cardShadow,
       );
 
-  /// Softer variant for tiles nested inside a card.
+  /// Softer variant for tiles nested inside a card (`rounded-xl`).
   static BoxDecoration get innerDecoration => BoxDecoration(
-        color: surfaceAlt.withValues(alpha: 0.78),
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+        color: surfaceLowest,
+        borderRadius: BorderRadius.circular(12),
       );
 
   static ThemeData dark() {
@@ -101,41 +137,44 @@ class AppTheme {
       brightness: Brightness.dark,
       primary: brand,
       onPrimary: onBrand,
-      primaryContainer: Color(0xFF4A2D16),
-      onPrimaryContainer: brand,
+      primaryContainer: brandDark,
+      onPrimaryContainer: Color(0xFF00422B),
       secondary: accent,
-      onSecondary: Color(0xFFFFFFFF),
-      secondaryContainer: Color(0xFF442516),
-      onSecondaryContainer: accent,
+      onSecondary: onAccent,
+      secondaryContainer: accentDark,
+      onSecondaryContainer: Color(0xFF00374D),
       tertiary: warning,
-      onTertiary: Color(0xFF251800),
+      onTertiary: Color(0xFF472A00),
+      tertiaryContainer: warningDark,
+      onTertiaryContainer: Color(0xFF523200),
       error: danger,
-      onError: Color(0xFF2A0707),
-      errorContainer: Color(0xFF3A1414),
-      onErrorContainer: Color(0xFFFFB4B4),
-      surface: surface,
+      onError: Color(0xFF690005),
+      errorContainer: Color(0xFF93000A),
+      onErrorContainer: Color(0xFFFFDAD6),
+      surface: bg,
       onSurface: ink,
       onSurfaceVariant: inkMuted,
-      surfaceContainerHighest: surfaceHigh,
-      surfaceContainerHigh: surfaceAlt,
-      surfaceContainerLow: surface,
+      surfaceContainerHighest: surfaceHighest,
+      surfaceContainerHigh: surfaceHigh,
+      surfaceContainerLow: surfaceAlt,
       surfaceContainer: surface,
-      outline: hairline,
+      outline: inkFaint,
       outlineVariant: hairline,
       shadow: Colors.black,
       inverseSurface: ink,
       onInverseSurface: bg,
-      inversePrimary: Color(0xFF3E6B1B),
+      inversePrimary: Color(0xFF006C49),
       scrim: Color(0xFF000000),
     );
 
     return ThemeData(
       useMaterial3: true,
       colorScheme: scheme,
+      fontFamily: 'Inter',
       scaffoldBackgroundColor: Colors.transparent,
       splashFactory: InkSparkle.splashFactory,
 
-      appBarTheme: const AppBarTheme(
+      appBarTheme: AppBarTheme(
         backgroundColor: Colors.transparent,
         foregroundColor: ink,
         elevation: 0,
@@ -144,56 +183,104 @@ class AppTheme {
         systemOverlayStyle: SystemUiOverlayStyle.light,
         titleTextStyle: TextStyle(
           color: ink,
-          fontSize: 21,
-          fontWeight: FontWeight.w800,
+          fontFamily: 'Inter',
+          fontSize: 18,
+          fontWeight: FontWeight.w600,
           letterSpacing: 0,
+          height: 1.33,
         ),
       ),
 
+      // ShiftFlow type scale: 36/28/22/18 headlines, 16/14/12 body,
+      // 14/12/11 labels. Weights follow the design (700/600/500/400).
       textTheme: const TextTheme(
         displaySmall: TextStyle(
-            fontSize: 30, fontWeight: FontWeight.w800, color: ink, letterSpacing: 0, height: 1.1),
+            fontSize: 36,
+            fontWeight: FontWeight.w700,
+            color: ink,
+            letterSpacing: -1.08,
+            height: 1.22), // display-metric
+        headlineMedium: TextStyle(
+            fontSize: 28,
+            fontWeight: FontWeight.w700,
+            color: ink,
+            letterSpacing: -0.56,
+            height: 1.29), // headline-lg
         headlineSmall: TextStyle(
-            fontSize: 24, fontWeight: FontWeight.w800, color: ink, letterSpacing: 0, height: 1.2),
+            fontSize: 22,
+            fontWeight: FontWeight.w600,
+            color: ink,
+            letterSpacing: -0.22,
+            height: 1.27), // headline-md
         titleLarge: TextStyle(
-            fontSize: 22, fontWeight: FontWeight.w800, color: ink, letterSpacing: 0, height: 1.2),
-          titleMedium: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: ink, letterSpacing: 0),
-        titleSmall: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: ink),
-        bodyLarge: TextStyle(fontSize: 16, color: ink, height: 1.4),
-        bodyMedium: TextStyle(fontSize: 14.5, color: Color(0xFFC4CFDB), height: 1.4),
-        bodySmall: TextStyle(fontSize: 12.5, color: inkMuted, height: 1.35),
-        labelLarge: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, letterSpacing: 0),
-        labelMedium: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: inkMuted),
-        labelSmall: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: inkFaint),
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: ink,
+            letterSpacing: 0,
+            height: 1.33), // headline-sm
+        titleMedium: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: ink,
+            letterSpacing: 0,
+            height: 1.35),
+        titleSmall: TextStyle(
+            fontSize: 14, fontWeight: FontWeight.w600, color: ink, height: 1.3),
+        bodyLarge: TextStyle(
+            fontSize: 16, fontWeight: FontWeight.w500, color: ink, height: 1.5),
+        bodyMedium:
+            TextStyle(fontSize: 14, color: ink, height: 1.43), // body-md
+        bodySmall: TextStyle(
+            fontSize: 12, color: inkMuted, height: 1.33, letterSpacing: 0.12),
+        labelLarge: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: ink,
+            letterSpacing: 0.28,
+            height: 1.29), // label-lg
+        labelMedium: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: inkMuted,
+            letterSpacing: 0.48,
+            height: 1.33), // label-md
+        labelSmall: TextStyle(
+            fontSize: 11,
+            fontWeight: FontWeight.w700,
+            color: inkFaint,
+            letterSpacing: 0.66,
+            height: 1.27), // label-badge
       ),
 
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: surfaceAlt.withValues(alpha: 0.72),
-        hintStyle: const TextStyle(color: inkFaint, fontSize: 14.5),
-        labelStyle: const TextStyle(color: inkMuted, fontSize: 14.5),
-        floatingLabelStyle: const TextStyle(color: brand, fontWeight: FontWeight.w700),
+        fillColor: surface,
+        hintStyle: const TextStyle(color: inkFaint, fontSize: 14),
+        labelStyle: const TextStyle(color: inkMuted, fontSize: 14),
+        floatingLabelStyle:
+            const TextStyle(color: brand, fontWeight: FontWeight.w600),
         prefixIconColor: inkMuted,
         suffixIconColor: inkMuted,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(28),
+          borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: hairline),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(28),
-          borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.12)),
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: hairline),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(28),
+          borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: brand, width: 1.4),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(28),
+          borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: danger),
         ),
         focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(28),
+          borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: danger, width: 1.6),
         ),
       ),
@@ -204,12 +291,14 @@ class AppTheme {
           foregroundColor: onBrand,
           disabledBackgroundColor: surfaceHigh,
           disabledForegroundColor: inkFaint,
-          shadowColor: brand.withValues(alpha: 0.45),
-          elevation: 6,
-          minimumSize: const Size.fromHeight(54),
+          shadowColor: brand.withValues(alpha: 0.35),
+          elevation: 4,
+          minimumSize: const Size.fromHeight(56),
           padding: const EdgeInsets.symmetric(horizontal: 20),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-          textStyle: const TextStyle(fontSize: 15.5, fontWeight: FontWeight.w800, letterSpacing: 0),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          textStyle: const TextStyle(
+              fontSize: 14, fontWeight: FontWeight.w700, letterSpacing: 0.28),
         ),
       ),
 
@@ -217,19 +306,20 @@ class AppTheme {
         style: OutlinedButton.styleFrom(
           foregroundColor: ink,
           disabledForegroundColor: inkFaint,
-          backgroundColor: Colors.transparent,
+          backgroundColor: surface,
           side: const BorderSide(color: hairline),
-          minimumSize: const Size.fromHeight(52),
+          minimumSize: const Size.fromHeight(48),
           padding: const EdgeInsets.symmetric(horizontal: 20),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-          textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
         ),
       ),
 
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: brand,
-          textStyle: const TextStyle(fontSize: 14.5, fontWeight: FontWeight.w700),
+          textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
         ),
       ),
 
@@ -238,15 +328,19 @@ class AppTheme {
       ),
 
       navigationBarTheme: NavigationBarThemeData(
-        backgroundColor: const Color(0xE6171514),
+        backgroundColor: surfaceAlt,
         shadowColor: Colors.transparent,
         surfaceTintColor: Colors.transparent,
-        indicatorColor: brand.withValues(alpha: 0.18),
+        indicatorColor: brand.withValues(alpha: 0.16),
         height: 72,
         elevation: 0,
         labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
         labelTextStyle: WidgetStatePropertyAll(
-          const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, letterSpacing: 0.1),
+          const TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.5,
+              fontFamily: 'Inter'),
         ),
         iconTheme: WidgetStateProperty.resolveWith(
           (states) => IconThemeData(
@@ -257,25 +351,28 @@ class AppTheme {
       ),
 
       chipTheme: ChipThemeData(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         side: const BorderSide(color: hairline),
-        backgroundColor: surfaceAlt,
-        selectedColor: brand.withValues(alpha: 0.16),
-        checkmarkColor: brand,
-        labelStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: ink),
+        backgroundColor: surface,
+        selectedColor: brand,
+        checkmarkColor: onBrand,
+        labelStyle: const TextStyle(
+            fontSize: 12, fontWeight: FontWeight.w600, color: ink),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       ),
 
-      dividerTheme: const DividerThemeData(color: hairline, space: 1, thickness: 1),
+      dividerTheme:
+          const DividerThemeData(color: hairline, space: 1, thickness: 1),
 
       snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
         backgroundColor: surfaceHigh,
         elevation: 8,
-        contentTextStyle: const TextStyle(color: ink, fontSize: 14, height: 1.35),
+        contentTextStyle:
+            const TextStyle(color: ink, fontSize: 14, height: 1.35),
         actionTextColor: brand,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(12),
           side: const BorderSide(color: hairline),
         ),
       ),
@@ -285,12 +382,17 @@ class AppTheme {
         surfaceTintColor: Colors.transparent,
         elevation: 24,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(16),
           side: const BorderSide(color: hairline),
         ),
         titleTextStyle: const TextStyle(
-            fontSize: 18, fontWeight: FontWeight.w800, color: ink, letterSpacing: -0.3),
-        contentTextStyle: const TextStyle(fontSize: 14.5, color: inkMuted, height: 1.4),
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: ink,
+            letterSpacing: -0.2,
+            fontFamily: 'Inter'),
+        contentTextStyle: const TextStyle(
+            fontSize: 14, color: inkMuted, height: 1.43, fontFamily: 'Inter'),
       ),
 
       bottomSheetTheme: const BottomSheetThemeData(
@@ -299,14 +401,14 @@ class AppTheme {
         elevation: 0,
         showDragHandle: false,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
         ),
       ),
 
       progressIndicatorTheme: const ProgressIndicatorThemeData(
         color: brand,
-        linearTrackColor: surfaceHigh,
-        circularTrackColor: surfaceHigh,
+        linearTrackColor: surfaceHighest,
+        circularTrackColor: surfaceHighest,
         refreshBackgroundColor: surfaceHigh,
       ),
 
@@ -318,10 +420,12 @@ class AppTheme {
 
       switchTheme: SwitchThemeData(
         thumbColor: WidgetStateProperty.resolveWith(
-          (states) => states.contains(WidgetState.selected) ? onBrand : inkMuted,
+          (states) =>
+              states.contains(WidgetState.selected) ? onBrand : inkMuted,
         ),
         trackColor: WidgetStateProperty.resolveWith(
-          (states) => states.contains(WidgetState.selected) ? brand : surfaceHigh,
+          (states) =>
+              states.contains(WidgetState.selected) ? brand : surfaceHighest,
         ),
         trackOutlineColor: WidgetStatePropertyAll(hairline),
       ),
@@ -336,10 +440,11 @@ class AppTheme {
         color: surfaceHigh,
         elevation: 12,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(12),
           side: const BorderSide(color: hairline),
         ),
-        textStyle: const TextStyle(fontSize: 14, color: ink),
+        textStyle:
+            const TextStyle(fontSize: 14, color: ink, fontFamily: 'Inter'),
       ),
 
       scrollbarTheme: ScrollbarThemeData(
@@ -360,12 +465,12 @@ class AppTheme {
 }
 
 extension DeliveryStatusStyle on DeliveryStatus {
-  /// Bright on the dark canvas so status reads at a glance while driving.
+  /// Toned to the ShiftFlow palette so status reads at a glance while driving.
   Color get color => switch (this) {
-        DeliveryStatus.pending => const Color(0xFF98A6B8),
-        DeliveryStatus.inTransit => const Color(0xFFFFB020),
-        DeliveryStatus.failed => const Color(0xFFFF6B6B),
-        DeliveryStatus.delivered => const Color(0xFF4ADE80),
+        DeliveryStatus.pending => AppTheme.inkMuted,
+        DeliveryStatus.inTransit => AppTheme.warning,
+        DeliveryStatus.failed => AppTheme.danger,
+        DeliveryStatus.delivered => AppTheme.success,
       };
 
   Color get background => color.withValues(alpha: 0.15);

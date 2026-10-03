@@ -158,22 +158,22 @@ class _NotificationTile extends StatelessWidget {
         color: unread
           ? AppTheme.brand.withValues(alpha: 0.08)
           : AppTheme.surface.withValues(alpha: 0.78),
-        borderRadius: BorderRadius.circular(22),
+        borderRadius: BorderRadius.circular(16),
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(22),
+          borderRadius: BorderRadius.circular(16),
           child: Container(
             width: double.infinity,
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
               color: unread
                   ? AppTheme.brand.withValues(alpha: 0.04)
-                  : Colors.white.withValues(alpha: 0.02),
-              borderRadius: BorderRadius.circular(22),
+                  : AppTheme.surfaceAlt.withValues(alpha: 0.5),
+              borderRadius: BorderRadius.circular(16),
               border: Border.all(
                 color: unread
                     ? AppTheme.brand.withValues(alpha: 0.28)
-                    : Colors.white.withValues(alpha: 0.10),
+                    : AppTheme.hairline,
               ),
             ),
             child: Row(

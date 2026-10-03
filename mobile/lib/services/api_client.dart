@@ -12,7 +12,17 @@ class AppConfig {
 
   /// Android emulator reaches the host machine through 10.0.2.2, iOS
   /// simulators and desktop use localhost.
-  static const defaultBaseUrl = 'http://localhost:8787';
+  ///
+  /// Overridden at build time for a real deployment, so the shipped bundle
+  /// never has to be edited to point at production:
+  ///
+  /// ```sh
+  /// flutter build web --dart-define=API_BASE_URL=https://api.example.com
+  /// ```
+  static const defaultBaseUrl = String.fromEnvironment(
+    'API_BASE_URL',
+    defaultValue: 'http://localhost:8787',
+  );
 
   static const connectTimeout = Duration(seconds: 15);
   static const requestTimeout = Duration(seconds: 30);

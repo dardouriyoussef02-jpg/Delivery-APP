@@ -251,7 +251,7 @@ class _Header extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: AppTheme.heroGradient,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppTheme.hairline),
         boxShadow: AppTheme.cardShadow,
       ),
