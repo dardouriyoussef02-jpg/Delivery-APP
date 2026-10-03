@@ -1,5 +1,10 @@
 node_modules/
-data/
+# Anchored to this directory on purpose. A bare `data/` matches at ANY depth
+# and silently swallowed src/data/*.js - the gateway, SQLite store and demo
+# dataset - which made every fresh clone (and the Render deploy) die on boot
+# with ERR_MODULE_NOT_FOUND. The leading slash keeps ignoring the runtime
+# database folder while letting the source code through.
+/data/
 .env
 *.db
 *.db-journal
