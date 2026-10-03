@@ -182,10 +182,10 @@ test('signing is idempotent - one driver, one agreement', async () => {
   }
 });
 
-test('a second driver gets only what is left on the dispatch board', async () => {
+test('each driver claims their own batch of stops', async () => {
   const app = await unsignedDriverApp();
   try {
-    // The established driver claims the whole pool first.
+    // The established driver claims the first batch of the open pool.
     const first = await app.login();
     assert.equal((await app.signContract(first.body.token)).status, 201);
 
@@ -214,13 +214,61 @@ test('a second driver gets only what is left on the dispatch board', async () =>
       acknowledged: true,
     });
     assert.equal(signed.status, 201);
-    assert.equal(signed.body.dispatch.assigned, 0, 'the pool was already dispatched');
+    assert.equal(signed.body.dispatch.assigned, 10, 'they claim the next batch');
+    assert.deepEqual(
+      signed.body.dispatch.deliveryIds,
+      ['DLV-1052', 'DLV-1053', 'DLV-1054', 'DLV-1055', 'DLV-1056', 'DLV-1057', 'DLV-1058', 'DLV-1059', 'DLV-1060', 'DLV-1061'],
+      'batch two is the next ten stops in route order',
+    );
 
     const mine = await get(app, '/api/v1/deliveries', token2);
-    assert.equal(mine.body.count, 0, 'they only ever see their own route');
+    assert.equal(mine.body.count, 10, 'they only ever see their own route');
+    assert.ok(
+      mine.body.deliveries.every((stop) => stop.driverId === secondBody.driver.id),
+      'every stop belongs to the second driver',
+    );
 
     const theirs = await get(app, '/api/v1/deliveries', first.body.token);
     assert.equal(theirs.body.count, 10, "the first driver's route is untouched");
+
+    const shared = mine.body.deliveries.filter((stop) =>
+      theirs.body.deliveries.some((other) => other.id === stop.id),
+    );
+    assert.deepEqual(shared, [], 'no stop is ever dispatched to two drivers');
+
+    // The board is deeper than two routes: a third driver claims batch three
+    // instead of being told there is nothing left to deliver.
+    const third = await fetch(`${app.base}/api/v1/auth/register`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        name: 'Third Driver',
+        email: 'third@example.com',
+        password: 'third-driver-pass',
+      }),
+    });
+    assert.equal(third.status, 201);
+    const token3 = (await third.json()).token;
+
+    const thirdSigned = await post(app, '/api/v1/contract/sign', token3, {
+      signatureName: 'Third Driver',
+      acknowledged: true,
+    });
+    assert.equal(thirdSigned.status, 201);
+    assert.equal(thirdSigned.body.dispatch.assigned, 10, 'batch three is still on the board');
+    assert.deepEqual(
+      thirdSigned.body.dispatch.deliveryIds,
+      ['DLV-1062', 'DLV-1063', 'DLV-1064', 'DLV-1065', 'DLV-1066', 'DLV-1067', 'DLV-1068', 'DLV-1069', 'DLV-1070', 'DLV-1071'],
+      'batch three is the next ten stops in route order',
+    );
+
+    const thirdStops = (await get(app, '/api/v1/deliveries', token3)).body.deliveries;
+    const earlier = [...mine.body.deliveries, ...theirs.body.deliveries];
+    assert.deepEqual(
+      thirdStops.filter((stop) => earlier.some((other) => other.id === stop.id)),
+      [],
+      'the three routes are disjoint',
+    );
   } finally {
     await app.close();
   }
@@ -243,7 +291,8 @@ test('a driver cannot read or change another driver - even with a forged query',
     });
     const otherToken = (await second.json()).token;
 
-    // Signed, but owns nothing: the ownership check - not the gate - applies.
+    // Signed, and therefore past the gate - but that grants no ownership of
+    // somebody else's stops, which is what the checks below actually prove.
     assert.equal((await app.signContract(otherToken)).status, 201);
 
     // Same 404 as a typo'd id, so a stop cannot be probed for.
@@ -257,9 +306,23 @@ test('a driver cannot read or change another driver - even with a forged query',
     });
     assert.equal(patch.status, 404, 'a stop can only be changed by its driver');
 
-    // Forging ?driverId does not widen a driver's view either.
+    // Forging ?driverId does not widen a driver's view either: the answer is
+    // exactly what their session already returns, never the other route.
+    const own = await get(app, '/api/v1/deliveries', otherToken);
     const forged = await get(app, '/api/v1/deliveries?driverId=DRV-77', otherToken);
-    assert.equal(forged.body.count, 0, 'the query parameter is ignored for drivers');
+    assert.deepEqual(
+      forged.body.deliveries.map((stop) => stop.id),
+      own.body.deliveries.map((stop) => stop.id),
+      'the query parameter is ignored for drivers',
+    );
+    assert.ok(
+      forged.body.deliveries.every((stop) => stop.driverId !== 'DRV-77'),
+      "the seeded driver's stops are never exposed",
+    );
+    assert.ok(
+      forged.body.deliveries.every((stop) => stop.id !== 'DLV-1042'),
+      "the seeded driver's route does not leak in",
+    );
   } finally {
     await app.close();
   }
@@ -273,7 +336,7 @@ test('the company keeps the overview: an admin sees every stop', async () => {
 
     const { status, body } = await get(app, '/api/v1/deliveries', admin.body.token);
     assert.equal(status, 200);
-    assert.equal(body.count, 10, 'admins are not scoped to one route');
+    assert.equal(body.count, 30, 'admins are not scoped to one route');
 
     // The admin is exempt from the agreement gate - they are the company.
     const stats = await get(app, '/api/v1/stats', admin.body.token);

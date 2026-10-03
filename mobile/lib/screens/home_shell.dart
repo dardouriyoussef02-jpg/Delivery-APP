@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import '../core/app_theme.dart';
 import '../state/deliveries_controller.dart';
 import '../state/notifications_controller.dart';
+import '../state/session_controller.dart';
 import 'deliveries_screen.dart';
 import 'profile_screen.dart';
 import 'route_screen.dart';
@@ -24,14 +25,19 @@ class _HomeShellState extends State<HomeShell> {
   @override
   void initState() {
     super.initState();
+    final session = context.read<SessionController>();
     final deliveries = context.read<DeliveriesController>();
     final notifications = context.read<NotificationsController>();
     // Deferred so we never notify listeners during the build phase.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      if (deliveries.state == LoadState.initial) {
-        deliveries.load();
-      }
+      // Always fetch, never "only the first time". The controller is created
+      // once for the lifetime of the app, so gating this on `LoadState.initial`
+      // meant exactly one driver ever triggered a request: every account that
+      // signed in afterwards was shown the previous driver's stops straight
+      // from memory. The session's own id rides along so the offline copy can
+      // be scoped to whoever is actually signed in.
+      deliveries.load(driverId: session.driverId);
       // Feed + one-time system setup (channel, permission, launch payload).
       if (notifications.state == LoadState.initial) {
         notifications.load();

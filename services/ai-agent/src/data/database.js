@@ -140,19 +140,31 @@ export function backfillDemoItems(db) {
  * Runtime "customer reply" notifications are created when a message is sent
  * in demo mode.
  */
-export function seedDemoNotifications(db) {
+export function seedDemoNotifications(db, { driverId } = {}) {
   const store = createNotificationStore(db);
-  if (store.count() > 0) return false;
+
+  // Scoped to one driver: when a *second* driver signs later they must have
+  // their own batch announced too, so a global "anything seeded yet?" guard
+  // would leave them with an empty feed. Per driver it is still exactly-once -
+  // a restart or a repeated sign never duplicates the rows.
+  if (driverId) {
+    const mine = db
+      .prepare("SELECT COUNT(*) AS n FROM notifications WHERE source = 'demo' AND driver_id = ?")
+      .get(driverId);
+    if (Number(mine?.n ?? 0) > 0) return false;
+  } else if (store.count() > 0) {
+    return false;
+  }
 
   const rows = db
     .prepare(
       `SELECT d.id, d.driver_id, d.sequence, d.notes_json, c.first_name, c.last_name
        FROM deliveries d
        LEFT JOIN customers c ON c.id = d.customer_id
-       WHERE d.driver_id IS NOT NULL
+       WHERE d.driver_id IS NOT NULL ${driverId ? 'AND d.driver_id = ?' : ''}
        ORDER BY d.sequence`,
     )
-    .all();
+    .all(...(driverId ? [driverId] : []));
   if (rows.length === 0) return false;
 
   const minutesAgo = (minutes) => new Date(Date.now() - minutes * 60_000).toISOString();
@@ -168,7 +180,8 @@ export function seedDemoNotifications(db) {
         : `${row.id} · stop ${row.sequence}`,
       deliveryId: row.id,
       source: 'demo',
-      // The two oldest assignments start as read so the badge shows 4.
+      // The two oldest assignments start as read so a demo badge is not
+      // maxed out the moment it appears.
       isRead: index < 2,
       createdAt: minutesAgo(90 - index * 6),
     });

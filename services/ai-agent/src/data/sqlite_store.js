@@ -358,13 +358,25 @@ export function createNotificationStore(db) {
 }
 
 /**
+ * How many open stops one driver claims per dispatch.
+ *
+ * The dispatch board is deliberately deeper than any single route. Handing
+ * every open stop to the first signer would leave every later driver with an
+ * empty queue, and because all drivers would be looking at the same seeded
+ * rows it would also mean every account shows an identical route. Each driver
+ * instead claims the next batch in route order, so no two drivers ever hold
+ * the same stop.
+ */
+export const DISPATCH_BATCH_SIZE = 10;
+
+/**
  * The driver partnership agreement, one row per driver.
  *
- * `sign()` also dispatches work: the company's open (unassigned) deliveries go
- * to the driver in the same call, which is what makes "sign the contract and
- * the company sends you jobs" a single, atomic step from the app's point of
- * view. Both statements run on the same synchronous connection, so a driver can
- * never end up signed-but-undispatched.
+ * `sign()` also dispatches work: the next open batch of deliveries goes to the
+ * driver in the same call, which is what makes "sign the contract and the
+ * company sends you jobs" a single, atomic step from the app's point of view.
+ * Both statements run on the same synchronous connection, so a driver can never
+ * end up signed-but-undispatched.
  */
 export function createContractStore(db) {
   return {
@@ -381,21 +393,25 @@ export function createContractStore(db) {
         : null;
     },
 
-    /** Every open stop, handed to `driverId`. Returns what was dispatched. */
+    /** The next open batch, handed to `driverId`. Returns what was dispatched. */
     async assignOpenWork(driverId) {
+      // Selected first so the caller can report exactly what moved. The UPDATE
+      // then re-states the same rule in one atomic statement rather than a loop
+      // of row-by-row writes: nothing can slip in between the two.
       const open = db
-        .prepare('SELECT id FROM deliveries WHERE driver_id IS NULL ORDER BY sequence')
-        .all();
+        .prepare('SELECT id FROM deliveries WHERE driver_id IS NULL ORDER BY sequence LIMIT ?')
+        .all(DISPATCH_BATCH_SIZE);
       if (open.length === 0) return { assigned: 0, deliveryIds: [] };
 
-      db.prepare('UPDATE deliveries SET driver_id = ?, updated_at = ? WHERE driver_id IS NULL').run(
-        driverId,
-        new Date().toISOString(),
-      );
+      db.prepare(
+        `UPDATE deliveries SET driver_id = ?, updated_at = ?
+         WHERE id IN (SELECT id FROM deliveries WHERE driver_id IS NULL ORDER BY sequence LIMIT ?)`,
+      ).run(driverId, new Date().toISOString(), DISPATCH_BATCH_SIZE);
+
       return { assigned: open.length, deliveryIds: open.map((row) => row.id) };
     },
 
-    /** Records the signature, then dispatches every open delivery to the driver. */
+    /** Records the signature, then dispatches the driver's batch of stops. */
     async sign({ driverId, version, signatureName, bodySnapshot }) {
       const existing = await this.find(driverId);
       if (existing) return { contract: existing, assigned: 0, deliveryIds: [] };

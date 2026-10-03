@@ -64,6 +64,48 @@ test('the driver gets the seeded demo feed with NTF ids and an unread count', as
   }
 });
 
+test('a driver who signs later is told about their own batch', async () => {
+  const app = await startTestApp({ signDriver: false });
+  try {
+    // The first driver signs and claims batch one.
+    const first = await app.login();
+    assert.equal((await app.signContract(first.body.token)).status, 201);
+    assert.equal((await feed(app, first.body.token)).body.notifications.length, 12);
+
+    // A second driver registers and signs afterwards.
+    const registered = await fetch(`${app.base}/api/v1/auth/register`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        name: 'Second Driver',
+        email: 'second-feed@example.com',
+        password: 'second-driver-pass',
+      }),
+    });
+    assert.equal(registered.status, 201);
+    const token2 = (await registered.json()).token;
+    assert.equal((await app.signContract(token2)).status, 201);
+
+    // Their feed announces their ten stops - not an empty list, and not the
+    // first driver's route replayed back to them.
+    const second = (await feed(app, token2)).body;
+    assert.equal(second.notifications.length, 10);
+    assert.ok(
+      second.notifications.every((item) => item.deliveryId >= 'DLV-1052'),
+      'batch two is the one announced',
+    );
+    assert.ok(
+      second.notifications.every((item) => item.deliveryId <= 'DLV-1061'),
+      "the first driver's stops never appear",
+    );
+
+    // Nothing about the first driver's feed was disturbed by the second sign.
+    assert.equal((await feed(app, first.body.token)).body.notifications.length, 12);
+  } finally {
+    await app.close();
+  }
+});
+
 test('unread=1 returns only the unread rows', async () => {
   const app = await startTestApp();
   try {

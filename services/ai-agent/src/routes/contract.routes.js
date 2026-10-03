@@ -64,7 +64,8 @@ export function createContractRoutes({ contracts, db }) {
       // Work only becomes visible once it belongs to someone, so the demo
       // dispatch feed is materialised here rather than at boot - otherwise a
       // fresh database would announce stops that are not assigned to anyone.
-      if (assigned > 0) seedDemoNotifications(db);
+      // Scoped to this driver so the second signer gets their own feed too.
+      if (assigned > 0) seedDemoNotifications(db, { driverId });
 
       return res.status(alreadySigned ? 200 : 201).json({
         contract,

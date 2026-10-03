@@ -26,6 +26,11 @@ class DeliveriesController extends ChangeNotifier {
     if (!silent) {
       state = LoadState.loading;
       error = null;
+      // Drop whatever is on screen before asking for the new route. The
+      // controller outlives sign-in/sign-out, so keeping the old rows around
+      // during a fetch - or after a failed one - would show one driver another
+      // driver's stops. A failed load now ends on an empty queue instead.
+      items = const [];
       notifyListeners();
     }
 

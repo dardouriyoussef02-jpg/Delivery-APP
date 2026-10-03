@@ -48,9 +48,11 @@ test('the admin sees totals aggregated from the database', async () => {
     assert.equal(body.source, 'database');
     assert.ok(!Number.isNaN(Date.parse(body.generatedAt)));
 
-    // Seeded demo route: 10 stops / 10 customers / 2 active users (driver+admin).
-    assert.equal(body.totals.deliveries, 10);
-    assert.equal(body.totals.customers, 10);
+    // Seeded dispatch pool: 30 stops / 30 customers / 2 active users (driver+admin).
+    // Three batches of ten sit on the board, but only the first signer's batch
+    // is assigned, so `perDriver` below stays at 10.
+    assert.equal(body.totals.deliveries, 30);
+    assert.equal(body.totals.customers, 30);
     assert.equal(body.totals.drivers, 2);
     assert.equal(body.totals.messagesSent, 0);
     assert.equal(body.totals.notifications, 12);
@@ -123,7 +125,8 @@ test('stats move when the database changes (status + sent message)', async () =>
       'finished = delivered + failed',
     );
     assert.ok(body.completion.finished >= 1);
-    assert.equal(body.completion.completionRate, 0.1);
+    // delivered / total, rounded to four decimals: 1 of 30 stops.
+    assert.equal(body.completion.completionRate, 0.0333);
     assert.equal(body.totals.messagesSent, 1);
 
     assert.equal(body.deliveryTime.sampleSize, 1);

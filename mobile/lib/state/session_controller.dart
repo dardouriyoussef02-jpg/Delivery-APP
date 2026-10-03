@@ -299,6 +299,9 @@ class SessionController extends ChangeNotifier {
     contractSigned = false;
     token = null;
     driverEmail = '';
+    // Reset the identity too: leaving the last driver's id behind would let the
+    // next screen act on behalf of an account nobody is signed in as.
+    driverId = 'DRV-77';
     driverName = 'Demo Driver';
     driverRole = 'driver';
     notice = noticeMessage;

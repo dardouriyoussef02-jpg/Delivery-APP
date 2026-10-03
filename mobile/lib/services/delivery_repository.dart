@@ -27,7 +27,7 @@ class DeliveryRepository {
       return (deliveries: deliveries, offline: false);
     } on ApiException catch (error) {
       if (!error.offline) rethrow;
-      return (deliveries: await _loadDemoDeliveries(), offline: true);
+      return (deliveries: await _loadDemoDeliveries(driverId), offline: true);
     }
   }
 
@@ -38,11 +38,11 @@ class DeliveryRepository {
     } on ApiException catch (error) {
       if (!error.offline) rethrow;
       final all = await _loadDemoDeliveries();
+      // Only ever this stop. Falling back to "some other delivery" would show
+      // a driver a stop that was never theirs.
       return all.firstWhere(
         (delivery) => delivery.id == id,
-        orElse: () => all.isEmpty
-            ? throw ApiException('Delivery $id is not available right now.')
-            : all.first,
+        orElse: () => throw ApiException('Delivery $id is not available right now.'),
       );
     }
   }
@@ -59,12 +59,18 @@ class DeliveryRepository {
     return Delivery.fromJson((data as Map).cast<String, dynamic>());
   }
 
-  Future<List<Delivery>> _loadDemoDeliveries() async {
+  /// The bundled demo route, scoped to [driverId].
+  ///
+  /// The asset is one demo driver's route. Any other account must get an empty
+  /// list rather than a queue of stops that belong to somebody else - an empty
+  /// queue with the offline banner is honest, someone else's work is not.
+  Future<List<Delivery>> _loadDemoDeliveries([String? driverId]) async {
     final raw = await rootBundle.loadString(_demoAsset);
     final payload = jsonDecode(raw) as Map<String, dynamic>;
     final rows = payload['deliveries'] as List? ?? const [];
     return rows
         .map((row) => Delivery.fromJson((row as Map).cast<String, dynamic>()))
+        .where((delivery) => driverId == null || delivery.driverId == driverId)
         .toList();
   }
 }
