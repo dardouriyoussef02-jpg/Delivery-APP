@@ -48,12 +48,12 @@ test('the admin sees totals aggregated from the database', async () => {
     assert.equal(body.source, 'database');
     assert.ok(!Number.isNaN(Date.parse(body.generatedAt)));
 
-    // Seeded demo route: 4 stops / 4 customers / 2 active users (driver+admin).
-    assert.equal(body.totals.deliveries, 4);
-    assert.equal(body.totals.customers, 4);
+    // Seeded demo route: 10 stops / 10 customers / 2 active users (driver+admin).
+    assert.equal(body.totals.deliveries, 10);
+    assert.equal(body.totals.customers, 10);
     assert.equal(body.totals.drivers, 2);
     assert.equal(body.totals.messagesSent, 0);
-    assert.equal(body.totals.notifications, 6);
+    assert.equal(body.totals.notifications, 12);
 
     const statusSum = Object.values(body.byStatus).reduce((sum, n) => sum + n, 0);
     assert.equal(statusSum, body.totals.deliveries, 'byStatus adds up');
@@ -76,7 +76,7 @@ test('the admin sees totals aggregated from the database', async () => {
 
     const demoDriver = body.perDriver.find((row) => row.driverId === 'DRV-77');
     assert.ok(demoDriver, 'the demo driver is listed');
-    assert.equal(demoDriver.assigned, 4);
+    assert.equal(demoDriver.assigned, 10);
     assert.equal(demoDriver.delivered, 0);
     assert.equal(demoDriver.averageMinutes, null);
   } finally {
@@ -123,7 +123,7 @@ test('stats move when the database changes (status + sent message)', async () =>
       'finished = delivered + failed',
     );
     assert.ok(body.completion.finished >= 1);
-    assert.equal(body.completion.completionRate, 0.25);
+    assert.equal(body.completion.completionRate, 0.1);
     assert.equal(body.totals.messagesSent, 1);
 
     assert.equal(body.deliveryTime.sampleSize, 1);

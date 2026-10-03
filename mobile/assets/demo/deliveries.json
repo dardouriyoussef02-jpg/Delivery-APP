@@ -6,11 +6,11 @@
       "id": "DLV-1042",
       "status": "in_transit",
       "zone": "Riverside",
-      "sequence": 3,
+      "sequence": 1,
       "driverId": "DRV-77",
       "windowStart": "2026-09-28T15:30:00.000Z",
       "windowEnd": "2026-09-28T16:30:00.000Z",
-      "eta": "2026-09-28T15:52:00.000Z",
+      "eta": "2026-09-28T15:44:00.000Z",
       "distanceKm": 4.2,
       "parcels": 2,
       "codAmount": 24.9,
@@ -43,35 +43,55 @@
         {
           "id": "NOTE-1",
           "author": "customer",
-          "createdAt": "2026-09-28T14:34:00.000Z",
+          "createdAt": "2026-09-28T14:26:00.000Z",
           "text": "Gate code 4482, please leave the parcels with my neighbour at no. 20 if I do not open. I am in a meeting until 16:00."
         },
         {
           "id": "NOTE-2",
           "author": "dispatcher",
-          "createdAt": "2026-09-28T14:50:00.000Z",
+          "createdAt": "2026-09-28T14:42:00.000Z",
           "text": "Customer asked for a delivery update when the driver is 10 minutes away."
         }
       ],
       "events": [
-        { "at": "2026-09-28T14:15:00.000Z", "type": "assigned", "label": "Assigned to driver" },
-        { "at": "2026-09-28T14:50:00.000Z", "type": "picked_up", "label": "Parcels picked up at hub" },
-        { "at": "2026-09-28T15:38:00.000Z", "type": "in_transit", "label": "On the way to Kanalstraat" }
+        {
+          "at": "2026-09-28T13:37:00.000Z",
+          "type": "assigned",
+          "label": "Assigned to driver"
+        },
+        {
+          "at": "2026-09-28T14:12:00.000Z",
+          "type": "picked_up",
+          "label": "Parcels picked up at hub"
+        },
+        {
+          "at": "2026-09-28T15:00:00.000Z",
+          "type": "in_transit",
+          "label": "On the way to Kanalstraat"
+        }
       ],
       "history": [
-        { "at": "2026-09-25T10:00:00.000Z", "outcome": "delivered", "label": "Delivered on first attempt" },
-        { "at": "2026-09-21T13:20:00.000Z", "outcome": "delivered", "label": "Left with neighbour" }
+        {
+          "at": "2026-09-25T15:12:00.000Z",
+          "outcome": "delivered",
+          "label": "Delivered on first attempt"
+        },
+        {
+          "at": "2026-09-21T15:12:00.000Z",
+          "outcome": "delivered",
+          "label": "Left with neighbour"
+        }
       ]
     },
     {
       "id": "DLV-1043",
       "status": "in_transit",
       "zone": "Nieuwe Westen",
-      "sequence": 4,
+      "sequence": 2,
       "driverId": "DRV-77",
-      "windowStart": "2026-09-28T16:10:00.000Z",
-      "windowEnd": "2026-09-28T17:10:00.000Z",
-      "eta": "2026-09-28T16:28:00.000Z",
+      "windowStart": "2026-09-28T16:12:00.000Z",
+      "windowEnd": "2026-09-28T17:12:00.000Z",
+      "eta": "2026-09-28T16:10:00.000Z",
       "distanceKm": 6.7,
       "parcels": 1,
       "codAmount": 0,
@@ -104,27 +124,39 @@
         {
           "id": "NOTE-3",
           "author": "customer",
-          "createdAt": "2026-09-28T15:08:00.000Z",
+          "createdAt": "2026-09-28T14:50:00.000Z",
           "text": "Parcel arrived damaged, the box is crushed and the seal is open. I want to refuse it."
         }
       ],
       "events": [
-        { "at": "2026-09-28T14:15:00.000Z", "type": "assigned", "label": "Assigned to driver" },
-        { "at": "2026-09-28T14:48:00.000Z", "type": "picked_up", "label": "Parcel picked up at hub" }
+        {
+          "at": "2026-09-28T13:44:00.000Z",
+          "type": "assigned",
+          "label": "Assigned to driver"
+        },
+        {
+          "at": "2026-09-28T14:20:00.000Z",
+          "type": "picked_up",
+          "label": "Parcel picked up at hub"
+        }
       ],
       "history": [
-        { "at": "2026-09-26T09:30:00.000Z", "outcome": "delivered", "label": "Delivered on first attempt" }
+        {
+          "at": "2026-09-23T15:12:00.000Z",
+          "outcome": "delivered",
+          "label": "Delivered on first attempt"
+        }
       ]
     },
     {
       "id": "DLV-1044",
       "status": "pending",
       "zone": "Kralingen",
-      "sequence": 5,
+      "sequence": 3,
       "driverId": "DRV-77",
-      "windowStart": "2026-09-28T17:20:00.000Z",
-      "windowEnd": "2026-09-28T18:20:00.000Z",
-      "eta": "2026-09-28T17:31:00.000Z",
+      "windowStart": "2026-09-28T17:22:00.000Z",
+      "windowEnd": "2026-09-28T18:22:00.000Z",
+      "eta": "2026-09-28T17:33:00.000Z",
       "distanceKm": 9.1,
       "parcels": 3,
       "codAmount": 61.4,
@@ -157,29 +189,37 @@
         {
           "id": "NOTE-4",
           "author": "customer",
-          "createdAt": "2026-09-28T15:25:00.000Z",
+          "createdAt": "2026-09-28T14:57:00.000Z",
           "text": "Can we move this to tomorrow morning? Nobody will be in the office today, sorry for the short notice."
         }
       ],
       "events": [
-        { "at": "2026-09-28T14:16:00.000Z", "type": "assigned", "label": "Assigned to driver" }
+        {
+          "at": "2026-09-28T14:32:00.000Z",
+          "type": "assigned",
+          "label": "Assigned to driver"
+        }
       ],
       "history": [
-        { "at": "2026-09-27T11:00:00.000Z", "outcome": "failed", "label": "Recipient unavailable" }
+        {
+          "at": "2026-09-27T15:12:00.000Z",
+          "outcome": "failed",
+          "label": "Recipient unavailable"
+        }
       ]
     },
     {
       "id": "DLV-1045",
       "status": "pending",
       "zone": "Feijenoord",
-      "sequence": 6,
+      "sequence": 4,
       "driverId": "DRV-77",
-      "windowStart": "2026-09-28T18:30:00.000Z",
-      "windowEnd": "2026-09-28T19:30:00.000Z",
-      "eta": "2026-09-28T18:45:00.000Z",
+      "windowStart": "2026-09-28T18:32:00.000Z",
+      "windowEnd": "2026-09-28T19:32:00.000Z",
+      "eta": "2026-09-28T18:37:00.000Z",
       "distanceKm": 11.4,
       "parcels": 1,
-      "codAmount": 12.0,
+      "codAmount": 12,
       "currency": "EUR",
       "item": {
         "name": "Running shoes",
@@ -209,12 +249,383 @@
         {
           "id": "NOTE-5",
           "author": "customer",
-          "createdAt": "2026-09-28T15:32:00.000Z",
+          "createdAt": "2026-09-28T15:04:00.000Z",
           "text": "Ring the bell twice, I am hard of hearing. Please do not leave it in the porch."
         }
       ],
       "events": [
-        { "at": "2026-09-28T14:17:00.000Z", "type": "assigned", "label": "Assigned to driver" }
+        {
+          "at": "2026-09-28T14:39:00.000Z",
+          "type": "assigned",
+          "label": "Assigned to driver"
+        }
+      ],
+      "history": []
+    },
+    {
+      "id": "DLV-1046",
+      "status": "pending",
+      "zone": "Delfshaven",
+      "sequence": 5,
+      "driverId": "DRV-77",
+      "windowStart": "2026-09-28T19:44:00.000Z",
+      "windowEnd": "2026-09-28T20:44:00.000Z",
+      "eta": "2026-09-28T19:56:00.000Z",
+      "distanceKm": 3.6,
+      "parcels": 1,
+      "codAmount": 0,
+      "currency": "EUR",
+      "item": {
+        "name": "Cordless drill",
+        "category": "Power tools",
+        "sku": "SKU-DRL-5507",
+        "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Cordless_drill_Metabo_BS_14%2C4_Li.JPG/960px-Cordless_drill_Metabo_BS_14%2C4_Li.JPG"
+      },
+      "address": {
+        "line1": "92 Schiedamseweg",
+        "line2": "Ground floor, left bell",
+        "city": "Rotterdam",
+        "postalCode": "3013 BH",
+        "lat": 51.9152,
+        "lng": 4.4449,
+        "accessHint": "Ring bell 2 - the names on the intercom are unreadable"
+      },
+      "customer": {
+        "id": "CUS-5108",
+        "firstName": "Ayse",
+        "lastName": "Yilmaz",
+        "phone": "+31 6 2211 3344",
+        "preferredChannel": "whatsapp",
+        "language": "nl",
+        "rating": 4.7
+      },
+      "notes": [
+        {
+          "id": "NOTE-6",
+          "author": "customer",
+          "createdAt": "2026-09-28T15:00:00.000Z",
+          "text": "I am at work until 17:30 - my neighbour at 92B can sign for it if I am not back in time."
+        }
+      ],
+      "events": [
+        {
+          "at": "2026-09-28T14:47:00.000Z",
+          "type": "assigned",
+          "label": "Assigned to driver"
+        }
+      ],
+      "history": []
+    },
+    {
+      "id": "DLV-1047",
+      "status": "in_transit",
+      "zone": "Charlois",
+      "sequence": 6,
+      "driverId": "DRV-77",
+      "windowStart": "2026-09-28T20:56:00.000Z",
+      "windowEnd": "2026-09-28T21:56:00.000Z",
+      "eta": "2026-09-28T21:08:00.000Z",
+      "distanceKm": 7.8,
+      "parcels": 1,
+      "codAmount": 145,
+      "currency": "EUR",
+      "item": {
+        "name": "Acoustic guitar",
+        "category": "Musical instruments",
+        "sku": "SKU-GTR-7723",
+        "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/00_Walden_Acoustic_Guitar_D310e_01.jpg/960px-00_Walden_Acoustic_Guitar_D310e_01.jpg"
+      },
+      "address": {
+        "line1": "45 Wolphaertsbocht",
+        "line2": "Houseboat De Reiger, mooring 12",
+        "city": "Rotterdam",
+        "postalCode": "3082 AJ",
+        "lat": 51.8946,
+        "lng": 4.4791,
+        "accessHint": "The gangway is steep - call out and I will come up to meet you"
+      },
+      "customer": {
+        "id": "CUS-3372",
+        "firstName": "Ruben",
+        "lastName": "dos Santos",
+        "phone": "+31 6 8877 1122",
+        "preferredChannel": "push",
+        "language": "en",
+        "rating": 4.5
+      },
+      "notes": [
+        {
+          "id": "NOTE-7",
+          "author": "customer",
+          "createdAt": "2026-09-28T14:37:00.000Z",
+          "text": "Cash on delivery is EUR 145 - please bring change, I only have a EUR 200 note."
+        }
+      ],
+      "events": [
+        {
+          "at": "2026-09-28T14:02:00.000Z",
+          "type": "assigned",
+          "label": "Assigned to driver"
+        },
+        {
+          "at": "2026-09-28T14:32:00.000Z",
+          "type": "picked_up",
+          "label": "Guitar picked up at the hub"
+        }
+      ],
+      "history": [
+        {
+          "at": "2026-09-25T03:52:00.000Z",
+          "outcome": "delivered",
+          "label": "Left at the back door"
+        }
+      ]
+    },
+    {
+      "id": "DLV-1048",
+      "status": "pending",
+      "zone": "Blijdorp",
+      "sequence": 7,
+      "driverId": "DRV-77",
+      "windowStart": "2026-09-28T22:08:00.000Z",
+      "windowEnd": "2026-09-28T23:08:00.000Z",
+      "eta": "2026-09-28T22:23:00.000Z",
+      "distanceKm": 5.4,
+      "parcels": 1,
+      "codAmount": 89.5,
+      "currency": "EUR",
+      "item": {
+        "name": "Microwave oven",
+        "category": "Kitchen appliances",
+        "sku": "SKU-MCW-8814",
+        "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bb/Microwave_Oven.jpg/960px-Microwave_Oven.jpg"
+      },
+      "address": {
+        "line1": "128 Kruiskade",
+        "line2": "Flat 3C, third floor",
+        "city": "Rotterdam",
+        "postalCode": "3012 EH",
+        "lat": 51.9212,
+        "lng": 4.4703,
+        "accessHint": "Lift is out of order - third floor on foot"
+      },
+      "customer": {
+        "id": "CUS-8456",
+        "firstName": "Fatima",
+        "lastName": "El Amrani",
+        "phone": "+31 6 3344 5566",
+        "preferredChannel": "sms",
+        "language": "nl",
+        "rating": 4.9
+      },
+      "notes": [
+        {
+          "id": "NOTE-8",
+          "author": "dispatcher",
+          "createdAt": "2026-09-28T14:54:00.000Z",
+          "text": "Fragile goods: the customer asked for it to be handed over in person, no doorstep drop."
+        }
+      ],
+      "events": [
+        {
+          "at": "2026-09-28T14:44:00.000Z",
+          "type": "assigned",
+          "label": "Assigned to driver"
+        }
+      ],
+      "history": []
+    },
+    {
+      "id": "DLV-1049",
+      "status": "failed",
+      "zone": "Katendrecht",
+      "sequence": 8,
+      "driverId": "DRV-77",
+      "windowStart": "2026-09-28T14:32:00.000Z",
+      "windowEnd": "2026-09-28T15:32:00.000Z",
+      "eta": "2026-09-28T14:50:00.000Z",
+      "distanceKm": 2.9,
+      "parcels": 2,
+      "codAmount": 0,
+      "currency": "EUR",
+      "item": {
+        "name": "Bicycle helmet",
+        "category": "Cycling gear",
+        "sku": "SKU-HLM-2044",
+        "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Bicycle_white_helmet_from_bikemate.jpg/960px-Bicycle_white_helmet_from_bikemate.jpg"
+      },
+      "address": {
+        "line1": "7 Brede Hilledijk",
+        "line2": "",
+        "city": "Rotterdam",
+        "postalCode": "3072 BK",
+        "lat": 51.8921,
+        "lng": 4.4889,
+        "accessHint": "Buzzer is broken - call on arrival"
+      },
+      "customer": {
+        "id": "CUS-2197",
+        "firstName": "Kees",
+        "lastName": "Vermeulen",
+        "phone": "+31 6 5566 7788",
+        "preferredChannel": "sms",
+        "language": "nl",
+        "rating": 4.2
+      },
+      "notes": [
+        {
+          "id": "NOTE-9",
+          "author": "customer",
+          "createdAt": "2026-09-28T14:32:00.000Z",
+          "text": "Yesterday nobody was home - sorry. I finish work at 15:00 today, please retry after that."
+        }
+      ],
+      "events": [
+        {
+          "at": "2026-09-28T12:27:00.000Z",
+          "type": "assigned",
+          "label": "Assigned to driver"
+        },
+        {
+          "at": "2026-09-28T13:27:00.000Z",
+          "type": "picked_up",
+          "label": "Parcels picked up at hub"
+        },
+        {
+          "at": "2026-09-28T14:27:00.000Z",
+          "type": "failed",
+          "label": "Recipient unavailable"
+        }
+      ],
+      "history": [
+        {
+          "at": "2026-09-27T05:52:00.000Z",
+          "outcome": "failed",
+          "label": "Recipient unavailable"
+        }
+      ]
+    },
+    {
+      "id": "DLV-1050",
+      "status": "pending",
+      "zone": "Hillegersberg",
+      "sequence": 9,
+      "driverId": "DRV-77",
+      "windowStart": "2026-09-28T23:24:00.000Z",
+      "windowEnd": "2026-09-29T00:24:00.000Z",
+      "eta": "2026-09-28T23:40:00.000Z",
+      "distanceKm": 8.3,
+      "parcels": 4,
+      "codAmount": 33.75,
+      "currency": "EUR",
+      "item": {
+        "name": "Board game",
+        "category": "Toys and games",
+        "sku": "SKU-BRD-6691",
+        "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/Just_One_party_game_box%2C_rules%2C_cards%2C_and_pieces_01.jpg/960px-Just_One_party_game_box%2C_rules%2C_cards%2C_and_pieces_01.jpg"
+      },
+      "address": {
+        "line1": "12 Bergse Dorpsstraat",
+        "line2": "Side entrance, blue door",
+        "city": "Rotterdam",
+        "postalCode": "3054 LC",
+        "lat": 51.9475,
+        "lng": 4.4739,
+        "accessHint": "Double door - please leave the boxes inside the porch"
+      },
+      "customer": {
+        "id": "CUS-6631",
+        "firstName": "Olga",
+        "lastName": "Nowak",
+        "phone": "+31 6 6677 8899",
+        "preferredChannel": "whatsapp",
+        "language": "en",
+        "rating": 4.8
+      },
+      "notes": [
+        {
+          "id": "NOTE-10",
+          "author": "customer",
+          "createdAt": "2026-09-28T15:02:00.000Z",
+          "text": "It is a surprise - do not ring before 14:00, the children must not see the boxes."
+        }
+      ],
+      "events": [
+        {
+          "at": "2026-09-28T14:52:00.000Z",
+          "type": "assigned",
+          "label": "Assigned to driver"
+        }
+      ],
+      "history": [
+        {
+          "at": "2026-09-23T18:32:00.000Z",
+          "outcome": "delivered",
+          "label": "Handed over in person"
+        }
+      ]
+    },
+    {
+      "id": "DLV-1051",
+      "status": "failed",
+      "zone": "Overschie",
+      "sequence": 10,
+      "driverId": "DRV-77",
+      "windowStart": "2026-09-28T13:57:00.000Z",
+      "windowEnd": "2026-09-28T14:57:00.000Z",
+      "eta": "2026-09-28T14:14:00.000Z",
+      "distanceKm": 12.6,
+      "parcels": 1,
+      "codAmount": 210,
+      "currency": "EUR",
+      "item": {
+        "name": "Baby stroller",
+        "category": "Baby and nursery",
+        "sku": "SKU-PRM-3388",
+        "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Stroller_or_pram_pic3.JPG/960px-Stroller_or_pram_pic3.JPG"
+      },
+      "address": {
+        "line1": "510 Delftseweg",
+        "line2": "Business park, unit 14",
+        "city": "Rotterdam",
+        "postalCode": "3043 GH",
+        "lat": 51.9294,
+        "lng": 4.4187,
+        "accessHint": "Gate closes at 17:00 sharp - press the buzzer for unit 14"
+      },
+      "customer": {
+        "id": "CUS-9904",
+        "firstName": "Jia-Ling",
+        "lastName": "Chen",
+        "phone": "+31 6 9900 1122",
+        "preferredChannel": "push",
+        "language": "en",
+        "rating": 4.6
+      },
+      "notes": [
+        {
+          "id": "NOTE-11",
+          "author": "dispatcher",
+          "createdAt": "2026-09-28T14:17:00.000Z",
+          "text": "Recipient refused the package because the box was crushed - photographs sent to dispatch."
+        }
+      ],
+      "events": [
+        {
+          "at": "2026-09-28T11:47:00.000Z",
+          "type": "assigned",
+          "label": "Assigned to driver"
+        },
+        {
+          "at": "2026-09-28T12:52:00.000Z",
+          "type": "picked_up",
+          "label": "Stroller picked up at hub"
+        },
+        {
+          "at": "2026-09-28T14:12:00.000Z",
+          "type": "failed",
+          "label": "Damaged goods"
+        }
       ],
       "history": []
     }

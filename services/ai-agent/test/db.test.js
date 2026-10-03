@@ -35,7 +35,7 @@ test('a fresh database is created, migrated and seeded with the demo route', asy
 
   const store = createSqliteStore(db);
   const deliveries = await store.list();
-  assert.equal(deliveries.length, 4);
+  assert.equal(deliveries.length, 10);
   assert.equal(deliveries[0].id, 'DLV-1042');
 
   // Shape the mobile app depends on must be identical to the demo store.
@@ -51,7 +51,7 @@ test('a fresh database is created, migrated and seeded with the demo route', asy
 
   // Seeding twice must not duplicate the demo data.
   assert.equal(seedDemoDeliveries(db), false);
-  assert.equal((await store.list()).length, 4);
+  assert.equal((await store.list()).length, 10);
   db.close();
 });
 
@@ -60,7 +60,7 @@ test('every demo delivery describes the goods with a name and a photo', async ()
   seedDemoDeliveries(db);
 
   const deliveries = await createSqliteStore(db).list();
-  assert.equal(deliveries.length, 4);
+  assert.equal(deliveries.length, 10);
   for (const delivery of deliveries) {
     assert.ok(delivery.item, `${delivery.id} must say what is being delivered`);
     assert.ok(delivery.item.name.trim().length > 0, `${delivery.id} has a name`);
@@ -81,12 +81,12 @@ test('a database from before the item column is backfilled on boot', async () =>
   firstRun.prepare('UPDATE deliveries SET item_json = NULL').run();
   assert.equal(
     Number(firstRun.prepare('SELECT COUNT(*) AS n FROM deliveries WHERE item_json IS NULL').get().n),
-    4,
+    10,
   );
   firstRun.close();
 
   const reopened = openDatabase({ path: file });
-  assert.equal(backfillDemoItems(reopened), 4);
+  assert.equal(backfillDemoItems(reopened), 10);
   assert.equal(backfillDemoItems(reopened), 0, 'the backfill is idempotent');
 
   const one = await createSqliteStore(reopened).get('DLV-1043');

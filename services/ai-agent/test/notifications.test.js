@@ -39,14 +39,14 @@ test('the driver gets the seeded demo feed with NTF ids and an unread count', as
     const { status, body } = await feed(app, login.body.token);
     assert.equal(status, 200);
 
-    // 4 assignments + 1 route change + 1 customer note (all demo-sourced).
-    assert.equal(body.notifications.length, 6);
+    // 10 assignments + 1 route change + 1 customer note (all demo-sourced).
+    assert.equal(body.notifications.length, 12);
     const types = new Set(body.notifications.map((item) => item.type));
     assert.deepEqual(
       [...types].sort(),
       ['assignment_changed', 'customer_update', 'delivery_assigned'],
     );
-    assert.equal(body.unreadCount, 4, 'the two oldest assignments start read');
+    assert.equal(body.unreadCount, 10, 'the two oldest assignments start read');
 
     for (const item of body.notifications) {
       assert.match(item.id, /^NTF-\d{4}$/);
@@ -70,9 +70,9 @@ test('unread=1 returns only the unread rows', async () => {
     const login = await app.login();
     const { body } = await feed(app, login.body.token, '?unread=1');
 
-    assert.equal(body.notifications.length, 4);
+    assert.equal(body.notifications.length, 10);
     assert.equal(body.notifications.every((item) => item.isRead === false), true);
-    assert.equal(body.unreadCount, 4);
+    assert.equal(body.unreadCount, 10);
   } finally {
     await app.close();
   }
@@ -91,7 +91,7 @@ test('marking a notification read updates the count and is idempotent', async ()
     assert.equal(first.status, 200);
     const firstBody = await first.json();
     assert.equal(firstBody.notification.isRead, true);
-    assert.equal(firstBody.unreadCount, 3);
+    assert.equal(firstBody.unreadCount, 9);
 
     // Reading it again must not fail or double-count.
     const second = await fetch(`${app.base}/api/v1/notifications/${target.id}/read`, {
@@ -99,7 +99,7 @@ test('marking a notification read updates the count and is idempotent', async ()
       headers: app.auth(login.body.token),
     });
     assert.equal(second.status, 200);
-    assert.equal((await second.json()).unreadCount, 3);
+    assert.equal((await second.json()).unreadCount, 9);
 
     // Unknown ids are 404.
     const missing = await fetch(`${app.base}/api/v1/notifications/NTF-9999/read`, {
@@ -136,7 +136,7 @@ test("another signed-in user cannot read or flip this driver's feed", async () =
 
     // The driver's feed is untouched.
     const stillUnread = (await feed(app, driver.body.token)).body;
-    assert.equal(stillUnread.unreadCount, 4);
+    assert.equal(stillUnread.unreadCount, 10);
   } finally {
     await app.close();
   }
@@ -161,7 +161,7 @@ test('a failed stop raises a status_changed notification; delivered does not', a
     assert.equal(statusNotes[0].deliveryId, 'DLV-1045');
     assert.equal(statusNotes[0].source, 'service', 'runtime events are service-sourced');
     assert.match(statusNotes[0].body, /Recipient unreachable/);
-    assert.equal(body.unreadCount, 5);
+    assert.equal(body.unreadCount, 11);
 
     // A normal completion is not an alert.
     await fetch(`${app.base}/api/v1/deliveries/DLV-1045/status`, {
@@ -254,7 +254,7 @@ test('the feed and read-state survive a restart', async () => {
         ids: seen.notifications.map((item) => item.id).sort(),
         unread: seen.unreadCount,
       };
-      assert.equal(before.ids.length, 6);
+      assert.equal(before.ids.length, 12);
 
       const newest = seen.notifications[0];
       const mark = await fetch(`${boot1.base}/api/v1/notifications/${newest.id}/read`, {

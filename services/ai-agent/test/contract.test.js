@@ -128,15 +128,15 @@ test('signing records the agreement and the company dispatches the open route', 
     assert.ok(!Number.isNaN(Date.parse(signed.body.contract.signedAt)));
     assert.deepEqual(
       signed.body.dispatch.deliveryIds,
-      ['DLV-1042', 'DLV-1043', 'DLV-1044', 'DLV-1045'],
+      ['DLV-1042', 'DLV-1043', 'DLV-1044', 'DLV-1045', 'DLV-1046', 'DLV-1047', 'DLV-1048', 'DLV-1049', 'DLV-1050', 'DLV-1051'],
       'every open stop is dispatched in route order',
     );
-    assert.equal(signed.body.dispatch.assigned, 4);
+    assert.equal(signed.body.dispatch.assigned, 10);
 
     // After: the same session now sees the work, and reports itself as signed.
     const after = await get(app, '/api/v1/deliveries', token);
     assert.equal(after.status, 200);
-    assert.equal(after.body.count, 4);
+    assert.equal(after.body.count, 10);
     assert.ok(
       after.body.deliveries.every((d) => d.driverId === login.body.driver.id),
       'every stop now belongs to the signer',
@@ -164,7 +164,7 @@ test('signing is idempotent - one driver, one agreement', async () => {
       acknowledged: true,
     });
     assert.equal(first.status, 201);
-    assert.equal(first.body.dispatch.assigned, 4);
+    assert.equal(first.body.dispatch.assigned, 10);
 
     const second = await post(app, '/api/v1/contract/sign', token, {
       signatureName: 'Somebody Else',
@@ -176,7 +176,7 @@ test('signing is idempotent - one driver, one agreement', async () => {
     assert.equal(second.body.dispatch.assigned, 0, 'nothing new to dispatch');
 
     const { body } = await get(app, '/api/v1/deliveries', token);
-    assert.equal(body.count, 4, 'work was not duplicated');
+    assert.equal(body.count, 10, 'work was not duplicated');
   } finally {
     await app.close();
   }
@@ -220,7 +220,7 @@ test('a second driver gets only what is left on the dispatch board', async () =>
     assert.equal(mine.body.count, 0, 'they only ever see their own route');
 
     const theirs = await get(app, '/api/v1/deliveries', first.body.token);
-    assert.equal(theirs.body.count, 4, "the first driver's route is untouched");
+    assert.equal(theirs.body.count, 10, "the first driver's route is untouched");
   } finally {
     await app.close();
   }
@@ -273,12 +273,12 @@ test('the company keeps the overview: an admin sees every stop', async () => {
 
     const { status, body } = await get(app, '/api/v1/deliveries', admin.body.token);
     assert.equal(status, 200);
-    assert.equal(body.count, 4, 'admins are not scoped to one route');
+    assert.equal(body.count, 10, 'admins are not scoped to one route');
 
     // The admin is exempt from the agreement gate - they are the company.
     const stats = await get(app, '/api/v1/stats', admin.body.token);
     assert.equal(stats.status, 200);
-    assert.equal(stats.body.totals.notifications, 6, 'dispatch feed follows the assignments');
+    assert.equal(stats.body.totals.notifications, 12, 'dispatch feed follows the assignments');
   } finally {
     await app.close();
   }
