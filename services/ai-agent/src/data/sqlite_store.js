@@ -1,4 +1,5 @@
 import { DatabaseSync } from 'node:sqlite';
+import { randomBytes } from 'node:crypto';
 
 /**
  * SQLite-backed stores.
@@ -356,5 +357,82 @@ export function createNotificationStore(db) {
   };
 }
 
+/**
+ * The driver partnership agreement, one row per driver.
+ *
+ * `sign()` also dispatches work: the company's open (unassigned) deliveries go
+ * to the driver in the same call, which is what makes "sign the contract and
+ * the company sends you jobs" a single, atomic step from the app's point of
+ * view. Both statements run on the same synchronous connection, so a driver can
+ * never end up signed-but-undispatched.
+ */
+export function createContractStore(db) {
+  return {
+    async find(driverId) {
+      const row = db.prepare('SELECT * FROM contracts WHERE driver_id = ?').get(driverId);
+      return row
+        ? {
+            id: row.id,
+            driverId: row.driver_id,
+            version: row.version,
+            signatureName: row.signature_name,
+            signedAt: row.signed_at,
+          }
+        : null;
+    },
+
+    /** Every open stop, handed to `driverId`. Returns what was dispatched. */
+    async assignOpenWork(driverId) {
+      const open = db
+        .prepare('SELECT id FROM deliveries WHERE driver_id IS NULL ORDER BY sequence')
+        .all();
+      if (open.length === 0) return { assigned: 0, deliveryIds: [] };
+
+      db.prepare('UPDATE deliveries SET driver_id = ?, updated_at = ? WHERE driver_id IS NULL').run(
+        driverId,
+        new Date().toISOString(),
+      );
+      return { assigned: open.length, deliveryIds: open.map((row) => row.id) };
+    },
+
+    /** Records the signature, then dispatches every open delivery to the driver. */
+    async sign({ driverId, version, signatureName, bodySnapshot }) {
+      const existing = await this.find(driverId);
+      if (existing) return { contract: existing, assigned: 0, deliveryIds: [] };
+
+      const signedAt = new Date().toISOString();
+      const id = `CON-${randomContractId()}`;
+      db.prepare(
+        `INSERT INTO contracts (id, driver_id, version, signature_name, body_snapshot, signed_at)
+         VALUES (?, ?, ?, ?, ?, ?)`,
+      ).run(id, driverId, version, signatureName, bodySnapshot, signedAt);
+
+      const contract = {
+        id,
+        driverId,
+        version,
+        signatureName,
+        signedAt,
+      };
+      const dispatch = await this.assignOpenWork(driverId);
+      return { contract, ...dispatch };
+    },
+
+    async count() {
+      return Number(db.prepare('SELECT COUNT(*) AS n FROM contracts').get()?.n ?? 0);
+    },
+  };
+}
+
+/** Contract ids are opaque; 6 bytes keeps them short without collisions. */
+function randomContractId() {
+  return randomBytes(6).toString('hex').toUpperCase();
+}
+
 export { DatabaseSync };
-export default { createSqliteStore, createSqliteAuthStore, createNotificationStore };
+export default {
+  createSqliteStore,
+  createSqliteAuthStore,
+  createNotificationStore,
+  createContractStore,
+};

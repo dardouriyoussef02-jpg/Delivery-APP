@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'core/app_theme.dart';
+import 'screens/contract_screen.dart';
 import 'screens/delivery_detail_screen.dart';
 import 'screens/home_shell.dart';
 import 'screens/login_screen.dart';
@@ -13,8 +14,8 @@ import 'state/deliveries_controller.dart';
 import 'state/notifications_controller.dart';
 import 'state/session_controller.dart';
 
-/// Wires the controllers together and decides between splash, login and the
-/// driver shell.
+/// Wires the controllers together and decides between splash, login, the
+/// partnership agreement and the driver shell.
 class DeliveryApp extends StatefulWidget {
   const DeliveryApp({super.key, this.session});
 
@@ -61,15 +62,21 @@ class _DeliveryAppState extends State<DeliveryApp> with WidgetsBindingObserver {
 
   /// Fresh feed whenever the app returns to the foreground (customer replies,
   /// dispatch changes, ... arrive while backgrounded).
+  ///
+  /// Gated on [SessionController.contractSigned] as well: the backend refuses
+  /// the feed to an unsigned driver, so asking would only log a pointless 403
+  /// while the agreement screen is up.
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed && _session.signedIn) {
+    if (state == AppLifecycleState.resumed &&
+        _session.signedIn &&
+        _session.contractSigned) {
       _notifications.load(silent: true);
     }
   }
 
   void _openStopFromNotification(String deliveryId) {
-    if (!_session.signedIn) return;
+    if (!_session.signedIn || !_session.contractSigned) return;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       navigatorKey.currentState?.push(
         MaterialPageRoute<void>(
@@ -107,9 +114,14 @@ class _DeliveryAppState extends State<DeliveryApp> with WidgetsBindingObserver {
             return AnimatedSwitcher(
               duration: const Duration(milliseconds: 260),
               switchInCurve: Curves.easeOut,
-              child: session.signedIn
-                  ? const HomeShell(key: ValueKey('shell'))
-                  : const LoginScreen(key: ValueKey('login')),
+              // Three states, not two: a signed-in driver who has not signed
+              // the partnership agreement never reaches the shell, because the
+              // backend would refuse them the deliveries anyway.
+              child: !session.signedIn
+                  ? const LoginScreen(key: ValueKey('login'))
+                  : !session.contractSigned
+                      ? const ContractScreen(key: ValueKey('contract'))
+                      : const HomeShell(key: ValueKey('shell')),
             );
           },
         ),

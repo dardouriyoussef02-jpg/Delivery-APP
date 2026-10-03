@@ -5,7 +5,7 @@
  * database can be upgraded in place when the shape changes later.
  */
 
-export const SCHEMA_VERSION = 2;
+export const SCHEMA_VERSION = 3;
 
 const migrations = [
   {
@@ -120,6 +120,22 @@ const migrations = [
     version: 2,
     sql: `
       ALTER TABLE deliveries ADD COLUMN item_json TEXT;
+    `,
+  },
+  {
+    // v3: the driver partnership agreement. One row per driver - the gate that
+    // decides whether they may receive dispatched work at all.
+    version: 3,
+    sql: `
+      CREATE TABLE IF NOT EXISTS contracts (
+        id             TEXT PRIMARY KEY,
+        driver_id      TEXT NOT NULL REFERENCES drivers(id) ON DELETE CASCADE,
+        version        TEXT NOT NULL,
+        signature_name TEXT NOT NULL,
+        body_snapshot  TEXT NOT NULL,
+        signed_at      TEXT NOT NULL
+      );
+      CREATE UNIQUE INDEX IF NOT EXISTS idx_contracts_driver ON contracts(driver_id);
     `,
   },
 ];

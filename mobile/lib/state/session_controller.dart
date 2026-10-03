@@ -8,6 +8,7 @@ import '../models/delivery.dart';
 import '../services/ai_agent_service.dart';
 import '../services/api_client.dart';
 import '../services/auth_service.dart';
+import '../services/contract_service.dart';
 import '../services/token_store.dart';
 
 /// Auth + connection settings for the signed-in driver.
@@ -31,6 +32,7 @@ class SessionController extends ChangeNotifier {
 
   static const _prefsSignedIn = 'session.signed_in';
   static const _prefsEmail = 'session.email';
+  static const _prefsContractSigned = 'session.contract_signed';
   static const _prefsAutoSuggest = 'settings.auto_suggest';
   static const _prefsChannel = 'settings.channel';
 
@@ -42,6 +44,14 @@ class SessionController extends ChangeNotifier {
   String driverEmail = '';
   String driverRole = 'driver';
   bool signedIn = false;
+
+  /// Whether the driver partnership agreement has been signed.
+  ///
+  /// Persisted alongside the session so a returning driver does not flash the
+  /// agreement screen while `/auth/me` is still in flight; the server reply
+  /// overwrites it either way, so a stale local value cannot unlock anything.
+  bool contractSigned = false;
+
   bool autoSuggest = true;
   MessageChannel defaultChannel = MessageChannel.sms;
 
@@ -65,6 +75,7 @@ class SessionController extends ChangeNotifier {
 
     token = await tokens.read();
     signedIn = token != null && (prefs.getBool(_prefsSignedIn) ?? false);
+    contractSigned = signedIn && (prefs.getBool(_prefsContractSigned) ?? false);
     if (signedIn) {
       driverName = _nameFromEmail(driverEmail);
       // Verify the stored token while the app boots. An invalid token drops
@@ -83,6 +94,11 @@ class SessionController extends ChangeNotifier {
       driverName = me.name;
       driverEmail = me.email;
       driverRole = me.role;
+      contractSigned = me.contractSigned;
+      // Converge the cached flag with the server, so the next cold start does
+      // not replay a disagreement between what we believed and what is true.
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool(_prefsContractSigned, contractSigned);
       notifyListeners();
     } on ApiException {
       // 401 already cleared the session through the ApiClient callback;
@@ -206,6 +222,49 @@ class SessionController extends ChangeNotifier {
     return true;
   }
 
+  /// Signs the partnership agreement on behalf of the signed-in driver.
+  ///
+  /// On success the backend also dispatches every open delivery to this driver,
+  /// so [contractSigned] flipping to true is exactly the moment work appears in
+  /// the queue - there is no separate "refresh my jobs" step to forget.
+  Future<bool> signContract({required String signatureName}) async {
+    busy = true;
+    errorMessage = null;
+    notifyListeners();
+
+    final trimmed = signatureName.trim();
+    if (trimmed.length < 2) {
+      errorMessage = 'Type your full name to sign.';
+      busy = false;
+      notifyListeners();
+      return false;
+    }
+
+    try {
+      await ContractService(api)
+          .sign(signatureName: trimmed, acknowledged: true);
+      contractSigned = true;
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool(_prefsContractSigned, true);
+    } on ApiException catch (error) {
+      errorMessage = error.offline
+          ? 'Cannot reach the server right now. Please try again.'
+          : error.message;
+      busy = false;
+      notifyListeners();
+      return false;
+    } catch (_) {
+      errorMessage = 'Signing failed. Please try again.';
+      busy = false;
+      notifyListeners();
+      return false;
+    }
+
+    busy = false;
+    notifyListeners();
+    return true;
+  }
+
   /// Applies a login/register result: stores the token securely and marks the
   /// session signed in. Shared by [signIn] and [signUp].
   Future<void> _startSession(LoginResult result) async {
@@ -214,12 +273,14 @@ class SessionController extends ChangeNotifier {
     driverName = result.driver.name;
     driverEmail = result.driver.email;
     driverRole = result.driver.role;
+    contractSigned = result.driver.contractSigned;
     signedIn = true;
     notice = null;
 
     await tokens.write(result.token);
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_prefsSignedIn, true);
+    await prefs.setBool(_prefsContractSigned, contractSigned);
     await prefs.setString(_prefsEmail, driverEmail);
   }
 
@@ -235,6 +296,7 @@ class SessionController extends ChangeNotifier {
 
   Future<void> _clearSession({String? noticeMessage}) async {
     signedIn = false;
+    contractSigned = false;
     token = null;
     driverEmail = '';
     driverName = 'Demo Driver';
@@ -243,6 +305,7 @@ class SessionController extends ChangeNotifier {
     await tokens.delete();
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_prefsSignedIn);
+    await prefs.remove(_prefsContractSigned);
     await prefs.remove(_prefsEmail);
     notifyListeners();
   }

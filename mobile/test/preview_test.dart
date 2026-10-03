@@ -40,6 +40,9 @@ Future<SessionController> _sessionWithDemoRoute() async {
           'name': 'Demo Driver',
           'email': 'driver@courier.co',
           'role': 'driver',
+          // The golden locks the *queue* design, so this driver is already
+          // under contract and lands in the shell.
+          'contractSigned': true,
         },
       });
     }

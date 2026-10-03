@@ -34,6 +34,9 @@ SessionController _sessionWithApi({bool acceptCredentials = true}) {
           'name': 'Demo Driver',
           'email': body['email'],
           'role': 'driver',
+          // An established driver has already signed the agreement, so
+          // sign-in lands in the shell rather than at the onboarding gate.
+          'contractSigned': true,
         },
       });
     }
@@ -49,6 +52,7 @@ SessionController _sessionWithApi({bool acceptCredentials = true}) {
           'name': 'Demo Driver',
           'email': 'driver@courier.co',
           'role': 'driver',
+          'contractSigned': true,
         },
       });
     }

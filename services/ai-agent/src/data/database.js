@@ -37,9 +37,13 @@ export function seedDemoDeliveries(db) {
 
   const now = new Date().toISOString();
 
-  // The demo deliveries reference the seeded driver (DRV-77), whose row is
-  // inserted by the async auth seeding. Switch FK checks off for the seed
-  // block only - the ids always line up afterwards.
+  // The demo route is an open pool: every stop starts unassigned, exactly like
+  // work sitting on the dispatch board. Stops only gain an owner when a driver
+  // signs the partnership agreement and the company sends them the open work
+  // (`contract.sign` -> `assignOpenWork`).
+  //
+  // The seeded driver (DRV-77) still exists - it is created by the async auth
+  // seeding - it just does not own anything yet.
   db.exec('PRAGMA foreign_keys = OFF');
   try {
     const upsertCustomer = db.prepare(`

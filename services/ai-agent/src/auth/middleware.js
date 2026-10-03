@@ -15,15 +15,18 @@ function bearerToken(req) {
 /**
  * Authentication middleware factory.
  *
- *  - `optionalAuth`: resolves `req.auth` when a valid session token is sent.
- *  - `requireAuth`:   401 unless a valid session (or the legacy service
- *                     `X-Driver-Token` secret) is present.
- *  - `requireRole`:   403 when the signed-in user lacks the role.
+ *  - `optionalAuth`:   resolves `req.auth` when a valid session token is sent.
+ *  - `requireAuth`:    401 unless a valid session (or the legacy service
+ *                      `X-Driver-Token` secret) is present.
+ *  - `requireRole`:    403 when the signed-in user lacks the role.
+ *  - `requireContract`:403 when a driver has not signed the partnership
+ *                      agreement yet. Admins and the service secret are the
+ *                      company itself, so they are exempt.
  *
  * The server never trusts the client's idea of who it is: the driver id always
  * comes from the validated session.
  */
-export function createAuthMiddleware({ auth }) {
+export function createAuthMiddleware({ auth, contracts }) {
   async function resolve(req) {
     const token = bearerToken(req);
     if (!token) return null;
@@ -74,7 +77,28 @@ export function createAuthMiddleware({ auth }) {
     };
   }
 
-  return { optionalAuth, requireAuth, requireRole };
+  /**
+   * The contract gate: no signed agreement, no dispatched work.
+   *
+   * Mounted after `requireAuth` and after the /contract routes, so an unsigned
+   * driver can still fetch and sign the agreement - they are only locked out of
+   * the routes that hand out or mutate deliveries. A missing store is a wiring
+   * bug, so it fails loudly instead of quietly letting everyone through.
+   */
+  async function requireContract(req, res, next) {
+    try {
+      if (req.legacyService) return next(); // the integration account is the company
+      if (!req.auth) return res.status(401).json({ error: 'authentication required' });
+      if (req.auth.user.role === 'admin') return next();
+      if (!contracts) return next(new Error('contract store is not configured'));
+      if (await contracts.find(req.auth.user.id)) return next();
+      return res.status(403).json({ error: 'driver contract not signed' });
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+  return { optionalAuth, requireAuth, requireRole, requireContract };
 }
 
 export default createAuthMiddleware;

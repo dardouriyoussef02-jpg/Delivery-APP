@@ -46,7 +46,8 @@ test('a fresh database is created, migrated and seeded with the demo route', asy
   assert.ok(Array.isArray(one.notes) && one.notes.length >= 2);
   assert.ok(Array.isArray(one.events) && one.events.length >= 1);
   assert.ok(Array.isArray(one.history));
-  assert.equal(one.driverId, 'DRV-77');
+  // Nothing owns the demo route yet: it is dispatched on contract signing.
+  assert.equal(one.driverId, null);
 
   // Seeding twice must not duplicate the demo data.
   assert.equal(seedDemoDeliveries(db), false);

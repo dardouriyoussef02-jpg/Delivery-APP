@@ -15,9 +15,13 @@ http.Response _json(Object body, {int status = 200}) => http.Response(
     );
 
 /// Stand-in for the auth endpoints that mirrors the backend contract:
-/// 422 invalid input, 409 e-mail taken, 403 sign-up disabled, 201 created.
+/// 422 invalid input, 409 e-mail taken, 403 sign-up disabled, 201 created -
+/// and a fresh signup is *unsigned*, so it must sign the partnership
+/// agreement before dispatch hands it any work.
 class _SignupServer {
   final List<Map<String, dynamic>> registrations = [];
+  final List<Map<String, dynamic>> signatures = [];
+  bool signed = false;
 
   SessionController session() => SessionController(client: MockClient(_handle));
 
@@ -54,12 +58,51 @@ class _SignupServer {
         'token': 'signup-token',
         'tokenType': 'Bearer',
         'expiresAt': '2099-01-01T00:00:00.000Z',
-        'driver': {'id': 'DRV-NEW1', 'name': name, 'email': email, 'role': 'driver'},
+        'driver': {
+          'id': 'DRV-NEW1',
+          'name': name,
+          'email': email,
+          'role': 'driver',
+          'contractSigned': false,
+        },
       }, status: 201);
     }
 
     if (request.headers['authorization'] != 'Bearer signup-token') {
       return _json({'error': 'authentication required'}, status: 401);
+    }
+
+    if (path.endsWith('/contract/sign')) {
+      final body = jsonDecode(request.body) as Map<String, dynamic>;
+      signatures.add(body);
+      signed = true;
+      return _json({
+        'contract': {
+          'id': 'CON-TEST',
+          'driverId': 'DRV-NEW1',
+          'version': '1.0',
+          'signatureName': body['signatureName'],
+          'signedAt': '2099-01-01T00:00:00.000Z',
+        },
+        'dispatch': {'assigned': 4, 'deliveryIds': ['DLV-1042']},
+        'alreadySigned': false,
+      }, status: 201);
+    }
+
+    if (path.endsWith('/contract')) {
+      return _json({
+        'version': '1.0',
+        'title': 'Driver Partnership Agreement',
+        'company': 'ShiftFlow Logistics',
+        'sections': [
+          {
+            'heading': '1. Engagement',
+            'body': 'The company dispatches deliveries to drivers who have '
+                'signed this agreement.',
+          },
+        ],
+        'signed': signed,
+      });
     }
 
     if (path.endsWith('/auth/me')) {
@@ -69,6 +112,7 @@ class _SignupServer {
           'name': 'Nina Courier',
           'email': 'nina@courier.co',
           'role': 'driver',
+          'contractSigned': signed,
         },
       });
     }
@@ -113,7 +157,7 @@ Future<void> _fillSignupForm(
 }
 
 void main() {
-  testWidgets('a new driver registers with e-mail and signs straight in',
+  testWidgets('a new driver registers, signs the agreement and then gets work',
       (tester) async {
     final server = _SignupServer();
     await _bootApp(tester, server);
@@ -132,14 +176,34 @@ void main() {
     await tester.tap(find.widgetWithText(FilledButton, 'Create account'));
     await tester.pumpAndSettle(const Duration(milliseconds: 400));
 
-    // Signed in: the driver shell replaced the form.
-    expect(find.text('Deliveries'), findsOneWidget);
-    expect(find.text('Route'), findsOneWidget);
-    expect(find.text('Profile'), findsOneWidget);
-
     expect(server.registrations, hasLength(1));
     expect(server.registrations.single['name'], 'Nina Courier');
     expect(server.registrations.single['email'], 'nina@courier.co');
+
+    // Signed in, but held at the agreement - no route until it is signed.
+    expect(find.text('Before your first route'), findsOneWidget);
+    expect(find.text('Deliveries'), findsNothing);
+
+    await tester.ensureVisible(find.byType(Checkbox));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(Checkbox));
+    await tester.pumpAndSettle();
+
+    final signButton = find.widgetWithText(FilledButton, 'Sign contract');
+    await tester.ensureVisible(signButton);
+    await tester.pumpAndSettle();
+    await tester.tap(signButton);
+    await tester.pumpAndSettle(const Duration(milliseconds: 400));
+
+    // The signature was sent as an explicit acknowledgement.
+    expect(server.signatures, hasLength(1));
+    expect(server.signatures.single['acknowledged'], true);
+    expect(server.signatures.single['signatureName'], 'Nina Courier');
+
+    // Signing is what unlocks the shell.
+    expect(find.text('Deliveries'), findsOneWidget);
+    expect(find.text('Route'), findsOneWidget);
+    expect(find.text('Profile'), findsOneWidget);
   });
 
   testWidgets('a mismatched password is caught before any request',

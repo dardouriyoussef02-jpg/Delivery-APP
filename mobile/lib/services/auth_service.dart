@@ -7,6 +7,7 @@ class DriverProfile {
     required this.name,
     required this.email,
     required this.role,
+    this.contractSigned = false,
   });
 
   final String id;
@@ -16,6 +17,13 @@ class DriverProfile {
   /// `driver` or `admin` - drives role-based screens (admin statistics).
   final String role;
 
+  /// Whether the driver partnership agreement is signed.
+  ///
+  /// The backend is the single source of truth (it gates the delivery routes on
+  /// it too), and a missing field is treated as *unsigned* so an older or
+  /// misbehaving server can never quietly unlock the queue.
+  final bool contractSigned;
+
   bool get isAdmin => role == 'admin';
 
   factory DriverProfile.fromJson(Map<String, dynamic> json) => DriverProfile(
@@ -23,6 +31,7 @@ class DriverProfile {
         name: (json['name'] as String?) ?? '',
         email: (json['email'] as String?) ?? '',
         role: (json['role'] as String?) ?? 'driver',
+        contractSigned: (json['contractSigned'] as bool?) ?? false,
       );
 }
 

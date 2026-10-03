@@ -3,13 +3,32 @@ import { Router } from 'express';
 /**
  * Read/write endpoints the mobile app uses for its delivery list and status
  * updates. Backed by the demo store or proxied to the client's existing API.
+ *
+ * Visibility is derived from the validated session, never from the query
+ * string: a driver only ever sees their own route, so a forged `?driverId=`
+ * is ignored rather than honoured. Admins and the legacy service secret are
+ * the company and may look at any route (or all of them at once).
  */
 export function createDeliveryRoutes({ gateway, notifications }) {
   const router = Router();
 
+  /** true when the caller may see or touch this delivery at all. */
+  function mayAccess(req, delivery) {
+    if (req.legacyService || req.auth?.user?.role === 'admin') return true;
+    return Boolean(delivery.driverId) && delivery.driverId === req.auth?.user?.id;
+  }
+
+  /** The driver id to list for: any (admin/service) or always the session's. */
+  function listScope(req) {
+    if (req.legacyService || req.auth?.user?.role === 'admin') {
+      return req.query.driverId ?? undefined;
+    }
+    return req.auth?.user?.id ?? null;
+  }
+
   router.get('/deliveries', async (req, res, next) => {
     try {
-      const rows = await gateway.list({ driverId: req.query.driverId });
+      const rows = await gateway.list({ driverId: listScope(req) });
       res.json({ mode: gateway.mode, count: rows.length, deliveries: rows });
     } catch (error) {
       next(error);
@@ -20,6 +39,10 @@ export function createDeliveryRoutes({ gateway, notifications }) {
     try {
       const delivery = await gateway.get(req.params.id);
       if (!delivery) return res.status(404).json({ error: `delivery ${req.params.id} not found` });
+      // Same 404 for "does not exist" and "not yours": no id probing.
+      if (!mayAccess(req, delivery)) {
+        return res.status(404).json({ error: `delivery ${req.params.id} not found` });
+      }
       res.json(delivery);
     } catch (error) {
       next(error);
@@ -33,6 +56,12 @@ export function createDeliveryRoutes({ gateway, notifications }) {
       if (!allowed.includes(status)) {
         return res.status(400).json({ error: `status must be one of ${allowed.join(', ')}` });
       }
+
+      const existing = await gateway.get(req.params.id);
+      if (!existing || !mayAccess(req, existing)) {
+        return res.status(404).json({ error: `delivery ${req.params.id} not found` });
+      }
+
       const updated = await gateway.updateStatus(req.params.id, status, {
         label,
         changedBy: req.auth?.user?.id ?? null,

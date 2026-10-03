@@ -5,6 +5,7 @@ import config from './config.js';
 import { createDeliveryGateway } from './data/gateway.js';
 import { backfillDemoItems, openDatabase, seedDemoDeliveries, seedDemoNotifications } from './data/database.js';
 import {
+  createContractStore,
   createNotificationStore,
   createSqliteAuthStore,
   createSqliteStore,
@@ -13,6 +14,7 @@ import { seedUsers } from './auth/seed.js';
 import { createAuthMiddleware } from './auth/middleware.js';
 import { createAuthRoutes } from './routes/auth.routes.js';
 import { createAgentRoutes } from './routes/agent.routes.js';
+import { createContractRoutes } from './routes/contract.routes.js';
 import { createDeliveryRoutes } from './routes/deliveries.routes.js';
 import { createNotificationRoutes } from './routes/notifications.routes.js';
 import { createStatsRoutes } from './routes/stats.routes.js';
@@ -42,6 +44,7 @@ export function createApp({ db, gateway, auth } = {}) {
 
   const deliveryGateway = gateway ?? createDeliveryGateway({ store: createSqliteStore(database) });
   const authStore = auth ?? createDefaultAuth(database);
+  const contractStore = createContractStore(database);
   const notificationStore = createNotificationStore(database);
   if (!config.existingApi.enabled) seedDemoNotifications(database);
 
@@ -50,7 +53,10 @@ export function createApp({ db, gateway, auth } = {}) {
   app.use(cors());
   app.use(express.json({ limit: '64kb' }));
 
-  const { optionalAuth, requireAuth, requireRole } = createAuthMiddleware({ auth: authStore });
+  const { optionalAuth, requireAuth, requireRole, requireContract } = createAuthMiddleware({
+    auth: authStore,
+    contracts: contractStore,
+  });
 
   // Resolves `req.auth` for every request; protected routes call requireAuth.
   app.use(optionalAuth);
@@ -68,16 +74,30 @@ export function createApp({ db, gateway, auth } = {}) {
   });
 
   // Auth endpoints first: /auth/login is the only public write.
-  app.use('/api/v1', createAuthRoutes({ auth: authStore, requireAuth }));
+  app.use(
+    '/api/v1',
+    createAuthRoutes({ auth: authStore, contracts: contractStore, requireAuth }),
+  );
 
   // Everything else under /api/v1 requires a valid session (or the legacy
   // service secret).
   app.use('/api/v1', requireAuth);
+
+  // The agreement sits *before* the contract gate: an unsigned driver has to
+  // be able to read it and sign it, otherwise the gate would be a dead end.
+  app.use('/api/v1', createContractRoutes({ contracts: contractStore, db: database }));
+
+  // Aggregated from the database; admin role (or legacy service secret) only.
+  // Deliberately mounted before requireContract: somebody asking for
+  // fleet-wide numbers needs to hear that they are not an admin, which is the
+  // real reason they are being turned away - not their contract state.
+  app.use('/api/v1', createStatsRoutes({ db: database, requireRole }));
+
+  // Dispatched work from here on: no signed agreement, no route.
+  app.use('/api/v1', requireContract);
   app.use('/api/v1', createAgentRoutes({ gateway: deliveryGateway, notifications: notificationStore }));
   app.use('/api/v1', createDeliveryRoutes({ gateway: deliveryGateway, notifications: notificationStore }));
   app.use('/api/v1', createNotificationRoutes({ notifications: notificationStore }));
-  // Aggregated from the database; admin role (or legacy service secret) only.
-  app.use('/api/v1', createStatsRoutes({ db: database, requireRole }));
 
   app.use((_req, res) => {
     res.status(404).json({ error: 'unknown endpoint' });

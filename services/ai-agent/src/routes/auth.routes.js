@@ -16,8 +16,12 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
  *
  * The mobile app stores the token in secure storage and sends it as
  * `Authorization: Bearer <token>` on every other call.
+ *
+ * Every response carries `driver.contractSigned`: the app uses it to decide
+ * between the agreement screen and the delivery queue, so it must come from the
+ * same place as the gate on the delivery routes - the contracts table.
  */
-export function createAuthRoutes({ auth, requireAuth }) {
+export function createAuthRoutes({ auth, requireAuth, contracts }) {
   const router = Router();
 
   /**
@@ -76,7 +80,7 @@ export function createAuthRoutes({ auth, requireAuth }) {
         token,
         tokenType: 'Bearer',
         expiresAt,
-        driver: publicUser(user),
+        driver: await publicUser(user, contracts),
       });
     } catch (error) {
       // Two identical sign-ups racing: the drivers table has UNIQUE(e-mail).
@@ -111,7 +115,7 @@ export function createAuthRoutes({ auth, requireAuth }) {
         token,
         tokenType: 'Bearer',
         expiresAt,
-        driver: publicUser(user),
+        driver: await publicUser(user, contracts),
       });
     } catch (error) {
       return next(error);
@@ -127,15 +131,28 @@ export function createAuthRoutes({ auth, requireAuth }) {
     }
   });
 
-  router.get('/auth/me', requireAuth, (req, res) => {
-    res.json({ driver: publicUser(req.auth.user) });
+  router.get('/auth/me', requireAuth, async (req, res) => {
+    res.json({ driver: await publicUser(req.auth.user, contracts) });
   });
 
   return router;
 }
 
-function publicUser(user) {
-  return { id: user.id, name: user.name, email: user.email, role: user.role };
+/**
+ * The only user shape ever sent to a client.
+ *
+ * `contractSigned` is looked up rather than stored on the row so there is a
+ * single source of truth: the agreement record itself.
+ */
+async function publicUser(user, contracts) {
+  const contract = contracts ? await contracts.find(user.id) : null;
+  return {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    contractSigned: Boolean(contract),
+  };
 }
 
 export default createAuthRoutes;
