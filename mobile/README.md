@@ -17,7 +17,20 @@ flutter pub get
 flutter run
 ```
 
-Sign in with any e-mail/password (demo build).
+Sign in with a real account — the backend validates every attempt:
+
+* **Seeded demo driver:** `driver@fleet.local` with the value of
+  `SEED_DRIVER_PASSWORD` (`services/ai-agent/.env.example`). For the deployed
+  service set it in the Render dashboard; when it is left unset the first boot
+  generates one and prints it **once** in the server logs, and a later restart
+  of that (ephemeral-disk) service generates a different one.
+* **Your own account:** create one from the sign-up tab (`ALLOW_SIGNUP` is on
+  by default).
+
+Signing in is not the end of onboarding: the partnership agreement must be
+signed once before dispatch hands work over. Until then `/deliveries` and
+`/notifications` answer **403**, which the app shows as the agreement screen —
+401 only ever means "no valid session".
 
 If the `android/` or `ios/` folder is missing (e.g. after a fresh checkout of
 only `lib/`), regenerate it — existing files such as `main.dart`,

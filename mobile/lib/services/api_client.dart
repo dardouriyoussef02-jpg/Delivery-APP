@@ -101,7 +101,9 @@ class ApiClient {
     try {
       final streamed = await _client.send(request).timeout(AppConfig.requestTimeout);
       final response = await http.Response.fromStream(streamed);
-      return _decode(response);
+      // `await` matters: it keeps the 401 cleanup inside this try/catch, so a
+      // rejected session is settled before the error reaches the caller.
+      return await _decode(response);
     } on ApiException {
       rethrow;
     } on TimeoutException {
@@ -122,7 +124,7 @@ class ApiClient {
   /// setting: connection details belong to the backend, not to a device screen.
   static const _offlineMessage = 'Cannot reach the server right now. Please try again.';
 
-  dynamic _decode(http.Response response) {
+  Future<dynamic> _decode(http.Response response) async {
     dynamic payload;
     if (response.body.isNotEmpty) {
       try {
@@ -139,8 +141,11 @@ class ApiClient {
           ? payload['error'] as String
           : 'The server could not complete the request.';
       if (response.statusCode == 401) {
-        // Fire and forget: the session controller clears the stored token.
-        onUnauthorized?.call();
+        // Awaited, not fire-and-forget: the session must be cleared *before*
+        // the caller handles the error, otherwise a boot sequence can reach
+        // the next endpoint (deliveries, notifications) with the very token
+        // the server just rejected and earn a second 401 for the same reason.
+        await onUnauthorized?.call();
       }
       throw ApiException(message, statusCode: response.statusCode);
     }

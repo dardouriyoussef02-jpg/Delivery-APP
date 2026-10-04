@@ -36,6 +36,11 @@ class SessionController extends ChangeNotifier {
   static const _prefsAutoSuggest = 'settings.auto_suggest';
   static const _prefsChannel = 'settings.channel';
 
+  /// How long a cold start waits for `/auth/me` before showing the app
+  /// anyway. Long enough for a normal round trip, short enough that a dead
+  /// server cannot turn the splash screen into a hang.
+  static const _sessionCheckGrace = Duration(seconds: 5);
+
   /// The rule the backend applies at sign-up (`auth/routes/auth.routes.js`),
   /// mirrored here rather than invented.
   ///
@@ -100,9 +105,28 @@ class SessionController extends ChangeNotifier {
     contractSigned = signedIn && (prefs.getBool(_prefsContractSigned) ?? false);
     if (signedIn) {
       driverName = _nameFromEmail(driverEmail);
-      // Verify the stored token while the app boots. An invalid token drops
-      // the session; an unreachable server keeps it (the app shows offline).
-      unawaited(_validateSession());
+      // Verify the stored token *before* the shell is allowed to mount. A
+      // token the server no longer knows - expired, revoked, or lost when a
+      // demo backend rebuilds its database - has to end up on the login screen
+      // from here, instead of the shell firing /deliveries and /notifications
+      // with a credential that can only ever answer 401.
+      //
+      // Bounded on purpose: an unreachable server must not pin the splash
+      // screen for a whole request timeout. After the grace period the app
+      // boots anyway (it shows as offline) and validation keeps running in
+      // the background - the same trade-off the offline demo depends on.
+      // The deadline is a cancellable timer, so a server that answers quickly
+      // never leaves a stray timer behind.
+      final deadline = Completer<void>();
+      final grace = Timer(_sessionCheckGrace, () => deadline.complete());
+      try {
+        await Future.any<void>([
+          _validateSession(),
+          deadline.future,
+        ]);
+      } finally {
+        grace.cancel();
+      }
     }
 
     ready = true;

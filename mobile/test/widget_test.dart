@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:delivery_driver/app.dart';
+import 'package:delivery_driver/services/token_store.dart';
 import 'package:delivery_driver/state/session_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -153,6 +154,23 @@ SessionController _sessionWithTwoRoutes() {
   return SessionController(client: client);
 }
 
+/// Deterministic stand-in for the platform secure enclave: the boot test has
+/// to start from a token that is present locally and unknown to the server.
+class _MemoryTokenStore implements TokenStore {
+  _MemoryTokenStore(this.value);
+
+  String? value;
+
+  @override
+  Future<String?> read() async => value;
+
+  @override
+  Future<void> write(String token) async => value = token;
+
+  @override
+  Future<void> delete() async => value = null;
+}
+
 void main() {
   testWidgets('boots into the login screen', (tester) async {
     SharedPreferences.setMockInitialValues({});
@@ -216,6 +234,49 @@ void main() {
 
     expect(find.text('Invalid e-mail or password.'), findsOneWidget);
     expect(find.text('Welcome back'), findsOneWidget);
+  });
+
+  testWidgets('a token the server no longer knows goes back to sign-in, not to a 401 loop',
+      (tester) async {
+    // The demo backend keeps its users in a SQLite file on an ephemeral disk:
+    // after a redeploy the stored token is valid from the app's point of view
+    // and unknown to the server. Boot must settle that on the login screen
+    // *before* the shell asks for the queue.
+    SharedPreferences.setMockInitialValues({
+      'session.signed_in': true,
+      'session.contract_signed': true,
+      'session.email': 'driver@courier.co',
+    });
+
+    final requested = <String>[];
+    final client = MockClient((request) async {
+      requested.add(request.url.path);
+      return _json({'error': 'session expired or invalid'}, status: 401);
+    });
+
+    final session = SessionController(
+      client: client,
+      tokenStore: _MemoryTokenStore('stale-token'),
+    );
+
+    await tester.pumpWidget(DeliveryApp(session: session));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Welcome back'), findsOneWidget, reason: 'the driver can sign in again');
+    expect(
+      requested.where((path) => path.endsWith('/auth/me')),
+      isNotEmpty,
+      reason: 'the restored token is verified first',
+    );
+    expect(
+      requested.where((path) => path.endsWith('/deliveries') || path.endsWith('/notifications')),
+      isEmpty,
+      reason: 'no work is requested with a credential the server already rejected',
+    );
+    expect(session.signedIn, isFalse);
+    expect(await session.tokens.read(), isNull, reason: 'the dead token is forgotten');
   });
 
   testWidgets('a second driver is shown their own route, never the first driver\'s',
