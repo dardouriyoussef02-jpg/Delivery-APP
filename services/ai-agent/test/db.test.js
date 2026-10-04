@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 import { backfillDemoItems, openDatabase, seedDemoDeliveries } from '../src/data/database.js';
-import { createSqliteAuthStore, createSqliteStore } from '../src/data/sqlite_store.js';
+import { createContractStore, createSqliteAuthStore, createSqliteStore } from '../src/data/sqlite_store.js';
 import { seedUsers } from '../src/auth/seed.js';
 import { hashToken } from '../src/auth/middleware.js';
 import { startTestApp, TEST_DRIVER } from './helpers.js';
@@ -55,6 +55,67 @@ test('a fresh database is created, migrated and seeded with the demo route', asy
   db.close();
 });
 
+test('a database from an older release gains the missing demo stops', async () => {
+  const file = tempDbPath();
+
+  // The previous release shipped a fixed four-stop route owned by DRV-77.
+  // Keep exactly that shape, so the next boot sees what a real upgrade sees.
+  const stale = openDatabase({ path: file });
+  assert.equal(seedDemoDeliveries(stale), true);
+  stale.prepare('DELETE FROM deliveries WHERE id NOT IN (?, ?, ?, ?)').run(
+    'DLV-1042',
+    'DLV-1043',
+    'DLV-1044',
+    'DLV-1045',
+  );
+  // The seeded accounts exist so the owner reference resolves.
+  await seedUsers(createSqliteAuthStore(stale), { log: { info() {}, warn() {} } });
+  stale.prepare("UPDATE deliveries SET driver_id = 'DRV-77'").run();
+  stale.close();
+
+  // --- next boot on the same file ---------------------------------------
+  const reopened = openDatabase({ path: file });
+  assert.equal(
+    seedDemoDeliveries(reopened),
+    true,
+    'the stops the current build expects are added',
+  );
+
+  const store = createSqliteStore(reopened);
+  assert.equal((await store.list()).length, 30, 'the open pool is complete again');
+
+  // Rows that were already there are live data: owner and status untouched.
+  const legacy = await store.get('DLV-1042');
+  assert.equal(legacy.driverId, 'DRV-77', 'an assigned stop keeps its owner');
+  assert.equal(legacy.status, 'in_transit', 'a stop in transit is not reset');
+
+  // Everything added by the backfill is open work, not somebody else's route.
+  const backfilled = await store.get('DLV-1071');
+  assert.equal(backfilled.driverId, null, 'new stops start on the dispatch board');
+
+  assert.equal(seedDemoDeliveries(reopened), false, 'the backfill is idempotent');
+  assert.equal((await store.list()).length, 30);
+  reopened.close();
+});
+
+test('a table holding stops that are not demo data is never touched', () => {
+  const db = openDatabase({ path: tempDbPath() });
+  seedDemoDeliveries(db);
+  // Something that is not ours: production rows come from the existing API.
+  db.prepare(
+    `INSERT INTO deliveries (id, status, sequence, driver_id, created_at, updated_at)
+     VALUES ('ORD-1', 'pending', 999, NULL, '2026-01-01T00:00:00.000Z', '2026-01-01T00:00:00.000Z')`,
+  ).run();
+
+  assert.equal(seedDemoDeliveries(db), false, 'demo work is not mixed into real data');
+  assert.equal(
+    Number(db.prepare('SELECT COUNT(*) AS n FROM deliveries').get().n),
+    31,
+    'nothing was inserted and nothing was removed',
+  );
+  db.close();
+});
+
 test('every demo delivery describes the goods with a name and a photo', async () => {
   const db = openDatabase({ path: tempDbPath() });
   seedDemoDeliveries(db);
@@ -93,6 +154,75 @@ test('a database from before the item column is backfilled on boot', async () =>
   assert.equal(one.item.name, '46-inch LED TV');
   assert.equal(one.item.sku, 'SKU-TV-4608');
   reopened.close();
+});
+
+test('a signed driver left with an empty queue is dispatched work on boot', async () => {
+  const file = tempDbPath();
+
+  // --- the previous release's database ---------------------------------
+  const stale = openDatabase({ path: file });
+  seedDemoDeliveries(stale);
+  stale.prepare('DELETE FROM deliveries WHERE id NOT IN (?, ?, ?, ?)').run(
+    'DLV-1042',
+    'DLV-1043',
+    'DLV-1044',
+    'DLV-1045',
+  );
+  const staleAuth = createSqliteAuthStore(stale);
+  await seedUsers(staleAuth, { log: { info() {}, warn() {} } });
+  // All four legacy stops belong to somebody else, so the open pool is empty.
+  await staleAuth.createUsers([
+    {
+      id: 'DRV-OLD',
+      email: 'legacy@example.com',
+      name: 'Legacy Driver',
+      role: 'driver',
+      passwordHash: 'scrypt:legacy',
+    },
+  ]);
+  stale.prepare("UPDATE deliveries SET driver_id = 'DRV-OLD'").run();
+
+  // Signing against that empty pool dispatched nothing - the state the app
+  // was stuck in: a signed agreement and a queue that never filled.
+  const signed = await createContractStore(stale).sign({
+    driverId: 'DRV-77',
+    version: '1.0',
+    signatureName: 'Demo Driver',
+    bodySnapshot: 'agreement',
+  });
+  assert.equal(signed.assigned, 0, 'there was nothing open to claim');
+  stale.close();
+
+  // --- next boot --------------------------------------------------------
+  const app = await startTestApp({ db: openDatabase({ path: file }), signDriver: false });
+  try {
+    const login = await app.login();
+    assert.equal(login.status, 200);
+    assert.equal(login.body.driver.contractSigned, true);
+
+    const response = await fetch(`${app.base}/api/v1/deliveries`, {
+      headers: app.auth(login.body.token),
+    });
+    const body = await response.json();
+    assert.equal(response.status, 200);
+    assert.equal(body.count, 10, 'the restart hands over the batch signing could not');
+    assert.ok(
+      body.deliveries.every((stop) => stop.driverId === login.body.driver.id),
+      'every stop belongs to the signed-in driver',
+    );
+  } finally {
+    await app.close();
+  }
+
+  // The sweep only ever fills an empty queue: the driver who did hold stops
+  // keeps every one of them.
+  const healed = openDatabase({ path: file });
+  assert.equal(
+    Number(healed.prepare("SELECT COUNT(*) AS n FROM deliveries WHERE driver_id = 'DRV-OLD'").get().n),
+    4,
+    'dispatch never takes work away from the driver who has it',
+  );
+  healed.close();
 });
 
 test('delivery status changes persist across a restart', async () => {

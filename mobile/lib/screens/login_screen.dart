@@ -71,12 +71,29 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _toggleMode() {
+    // Snapshot what the driver has typed first: `Form.reset()` restores each
+    // field to the value it had when it was *built* - which was empty - so it
+    // silently threw away the e-mail and password already on screen. That is
+    // how a filled-in form ended up reporting an invalid e-mail.
+    final name = _nameController.text;
+    final email = _emailController.text;
+    final password = _passwordController.text;
+
     setState(() {
       _signUp = !_signUp;
+      // A confirmation only means something inside sign-up, so it is dropped
+      // rather than carried across.
       _confirmController.clear();
     });
-    // Clear any stale validation errors from the other mode.
+
+    // Clears the other mode's validation errors...
     _formKey.currentState?.reset();
+
+    // ...without costing the driver what they typed. The confirm field is
+    // deliberately left empty - see above.
+    _nameController.text = name;
+    _emailController.text = email;
+    _passwordController.text = password;
   }
 
   @override
@@ -174,7 +191,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           labelText: 'Full name',
                           prefixIcon: Icon(Icons.person_outline),
                         ),
-                        validator: (value) => value == null || value.trim().length < 2
+                        // Reads the controller, not the field's remembered
+                        // value - see the note on `_toggleMode`.
+                        validator: (_) => _nameController.text.trim().length < 2
                             ? 'Enter your name'
                             : null,
                       ),
@@ -188,8 +207,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         labelText: 'E-mail',
                         prefixIcon: Icon(Icons.mail_outline),
                       ),
-                      validator: (value) =>
-                          value == null || !value.contains('@') ? 'Enter a valid e-mail' : null,
+                      // Shares the backend's rule, so the form can never accept
+                      // something the server answers 422.
+                      validator: (_) => SessionController.validateEmail(_emailController.text),
                     ),
                     const SizedBox(height: 14),
                     TextFormField(
@@ -206,8 +226,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           onPressed: () => setState(() => _obscure = !_obscure),
                         ),
                       ),
-                      validator: (value) =>
-                          value == null || value.length < (_signUp ? 8 : 4)
+                      validator: (_) =>
+                          _passwordController.text.length < (_signUp ? 8 : 4)
                               ? (_signUp
                                   ? 'At least 8 characters'
                                   : 'At least 4 characters')
@@ -230,7 +250,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             onPressed: () => setState(() => _obscure = !_obscure),
                           ),
                         ),
-                        validator: (value) => value != _passwordController.text
+                        validator: (_) => _confirmController.text !=
+                                _passwordController.text
                             ? 'Passwords do not match'
                             : null,
                         onFieldSubmitted: (_) => _submit(),

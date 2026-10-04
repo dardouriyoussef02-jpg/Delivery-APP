@@ -46,7 +46,21 @@ export function createApp({ db, gateway, auth } = {}) {
   const authStore = auth ?? createDefaultAuth(database);
   const contractStore = createContractStore(database);
   const notificationStore = createNotificationStore(database);
-  if (!config.existingApi.enabled) seedDemoNotifications(database);
+  if (!config.existingApi.enabled) {
+    // A database written by an earlier build can hold a *signed* driver with
+    // no stops at all: the demo route used to be a fixed four-stop batch owned
+    // by DRV-77, so the open pool was already empty when that account signed
+    // and dispatch - idempotent by design - had nothing to hand over. Re-run
+    // the rule signing itself applies before the first request is served, so
+    // the queue is already filled when the app asks for it. A driver who holds
+    // stops is skipped, so this can never grow somebody's route, and it never
+    // opens work the company has not put on the board.
+    for (const row of database.prepare('SELECT driver_id FROM contracts').all()) {
+      const dispatch = contractStore.assignIfIdle(row.driver_id);
+      if (dispatch.assigned > 0) seedDemoNotifications(database, { driverId: row.driver_id });
+    }
+    seedDemoNotifications(database);
+  }
 
   const app = express();
 

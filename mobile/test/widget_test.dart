@@ -198,7 +198,7 @@ void main() {
     await tester.tap(find.widgetWithText(FilledButton, 'Sign in'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Enter a valid e-mail'), findsOneWidget);
+    expect(find.text('Enter a valid e-mail, e.g. name@example.com'), findsOneWidget);
   });
 
   testWidgets('shows the backend rejection for bad credentials', (tester) async {

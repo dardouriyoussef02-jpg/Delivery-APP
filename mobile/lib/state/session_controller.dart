@@ -36,6 +36,28 @@ class SessionController extends ChangeNotifier {
   static const _prefsAutoSuggest = 'settings.auto_suggest';
   static const _prefsChannel = 'settings.channel';
 
+  /// The rule the backend applies at sign-up (`auth/routes/auth.routes.js`),
+  /// mirrored here rather than invented.
+  ///
+  /// The app used to accept anything containing `@`, so a driver could pass the
+  /// form and still be answered 422 with a bare "enter a valid e-mail address"
+  /// - which is exactly what "it always says e-mail invalid" was.
+  static final RegExp _emailRe = RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$');
+
+  /// Canonical form of an address: no whitespace (never legal in an e-mail, and
+  /// keyboards and paste routinely leave a stray space behind) and lower case,
+  /// so what the driver types is what the server stores.
+  static String normalizeEmail(String email) =>
+      email.replaceAll(RegExp(r'\s+'), '').toLowerCase();
+
+  /// `null` when the address is one the server will accept, otherwise the
+  /// message to show. Always states the expected shape - a bare "invalid" tells
+  /// the driver nothing about what to fix.
+  static String? validateEmail(String email) =>
+      _emailRe.hasMatch(normalizeEmail(email))
+          ? null
+          : 'Enter a valid e-mail, e.g. name@example.com';
+
   /// Where the app talks to. Fixed at build time - the endpoint is a build
   /// setting, never something a device screen edits or displays.
   final String baseUrl = AppConfig.defaultBaseUrl;
@@ -126,9 +148,10 @@ class SessionController extends ChangeNotifier {
     errorMessage = null;
     notifyListeners();
 
-    final trimmedEmail = email.trim();
-    if (!trimmedEmail.contains('@') || trimmedEmail.length < 5) {
-      errorMessage = 'Enter a valid e-mail address.';
+    final trimmedEmail = normalizeEmail(email);
+    final emailProblem = validateEmail(trimmedEmail);
+    if (emailProblem != null) {
+      errorMessage = emailProblem;
     } else if (password.length < 4) {
       errorMessage = 'Password must be at least 4 characters.';
     }
@@ -178,11 +201,12 @@ class SessionController extends ChangeNotifier {
     notifyListeners();
 
     final trimmedName = name.trim();
-    final trimmedEmail = email.trim();
+    final trimmedEmail = normalizeEmail(email);
+    final emailProblem = validateEmail(trimmedEmail);
     if (trimmedName.length < 2) {
       errorMessage = 'Enter your name (at least 2 characters).';
-    } else if (!trimmedEmail.contains('@') || trimmedEmail.length < 5) {
-      errorMessage = 'Enter a valid e-mail address.';
+    } else if (emailProblem != null) {
+      errorMessage = emailProblem;
     } else if (password.length < 8) {
       errorMessage = 'Password must be at least 8 characters.';
     }

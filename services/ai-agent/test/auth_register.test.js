@@ -44,6 +44,38 @@ test('a new driver registers with e-mail + password and is signed in', async () 
   }
 });
 
+test('a stray space cannot cost a driver their sign-up', async () => {
+  const app = await startTestApp();
+  try {
+    // Keyboards and paste routinely leave whitespace behind. It is never legal
+    // in an e-mail, so it gets cleaned up - not turned into a 422 the driver
+    // has no way to decode.
+    const created = await register(app, {
+      name: 'Youssef Dardouri',
+      email: '  Youssef .Dardouri@Gmail.com ',
+      password: 'strong-pass-1',
+    });
+
+    assert.equal(created.status, 201, 'a stray space must not block sign-up');
+    assert.equal(created.body.driver.email, 'youssef.dardouri@gmail.com');
+
+    // The stored account is one address: the same driver signs back in.
+    const again = await app.login(' Youssef.Dardouri@Gmail.COM ', 'strong-pass-1');
+    assert.equal(again.status, 200);
+    assert.equal(again.body.driver.id, created.body.driver.id);
+
+    // And it is exactly one row - normalisation never forks an account.
+    const repeat = await register(app, {
+      name: 'Youssef Again',
+      email: 'youssef.dardouri@gmail.com',
+      password: 'another-pass-1',
+    });
+    assert.equal(repeat.status, 409);
+  } finally {
+    await app.close();
+  }
+});
+
 test('invalid sign-ups are rejected with 422', async () => {
   const app = await startTestApp();
   try {

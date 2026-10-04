@@ -1,5 +1,6 @@
 import { DatabaseSync } from 'node:sqlite';
 import { randomBytes } from 'node:crypto';
+import { normalizeEmail } from '../auth/email.js';
 
 /**
  * SQLite-backed stores.
@@ -177,7 +178,7 @@ function mapUser(row) {
 export function createSqliteAuthStore(db) {
   return {
     async findUserByEmail(email) {
-      const needle = String(email ?? '').trim().toLowerCase();
+      const needle = normalizeEmail(email);
       return mapUser(db.prepare('SELECT * FROM drivers WHERE email = ?').get(needle));
     },
 
@@ -195,7 +196,7 @@ export function createSqliteAuthStore(db) {
          VALUES (?, ?, ?, ?, ?, 1, ?)`,
       ).run(
         user.id,
-        String(user.email).trim().toLowerCase(),
+        normalizeEmail(user.email),
         user.name,
         user.role ?? 'driver',
         user.passwordHash,
@@ -393,8 +394,15 @@ export function createContractStore(db) {
         : null;
     },
 
-    /** The next open batch, handed to `driverId`. Returns what was dispatched. */
-    async assignOpenWork(driverId) {
+    /**
+     * The next open batch, handed to `driverId`. Returns what was dispatched.
+     *
+     * Synchronous on purpose: `node:sqlite` is synchronous, and the boot-time
+     * sweep in `server.js` has to finish before the app starts answering
+     * requests so no driver can be shown a queue that dispatch is still
+     * filling.
+     */
+    assignOpenWork(driverId) {
       // Selected first so the caller can report exactly what moved. The UPDATE
       // then re-states the same rule in one atomic statement rather than a loop
       // of row-by-row writes: nothing can slip in between the two.
@@ -411,10 +419,32 @@ export function createContractStore(db) {
       return { assigned: open.length, deliveryIds: open.map((row) => row.id) };
     },
 
+    /**
+     * Dispatches a batch, but only to a signed driver who is holding nothing.
+     *
+     * Signing is idempotent - one driver, one agreement - which used to make
+     * it a dead end: a driver who signed while the open pool happened to be
+     * empty was told "already signed" on every later attempt and dispatched
+     * nothing, so their queue stayed empty with no way back. Work is only ever
+     * handed over while this driver has no stop at all, so a driver who
+     * already has a route can never pull a second batch out of it.
+     */
+    assignIfIdle(driverId) {
+      const held = db
+        .prepare('SELECT COUNT(*) AS n FROM deliveries WHERE driver_id = ?')
+        .get(driverId);
+      if (Number(held?.n ?? 0) > 0) return { assigned: 0, deliveryIds: [] };
+      return this.assignOpenWork(driverId);
+    },
+
     /** Records the signature, then dispatches the driver's batch of stops. */
     async sign({ driverId, version, signatureName, bodySnapshot }) {
       const existing = await this.find(driverId);
-      if (existing) return { contract: existing, assigned: 0, deliveryIds: [] };
+      // Already agreed: the signature is never overwritten, but an agreement
+      // that left the driver with no work still gets them a batch. A driver
+      // who already holds stops gets `assigned: 0`, so signing twice never
+      // duplicates a route.
+      if (existing) return { contract: existing, ...this.assignIfIdle(driverId) };
 
       const signedAt = new Date().toISOString();
       const id = `CON-${randomContractId()}`;
@@ -430,7 +460,7 @@ export function createContractStore(db) {
         signatureName,
         signedAt,
       };
-      const dispatch = await this.assignOpenWork(driverId);
+      const dispatch = this.assignOpenWork(driverId);
       return { contract, ...dispatch };
     },
 

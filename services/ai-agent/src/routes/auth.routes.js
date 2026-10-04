@@ -3,8 +3,7 @@ import { randomBytes } from 'node:crypto';
 import config from '../config.js';
 import { hashPassword, verifyPassword } from '../auth/passwords.js';
 import { hashToken } from '../auth/middleware.js';
-
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+import { isValidEmail, normalizeEmail } from '../auth/email.js';
 
 /**
  * Session endpoints.
@@ -45,13 +44,15 @@ export function createAuthRoutes({ auth, requireAuth, contracts }) {
 
       const { name, email, password } = req.body ?? {};
       const trimmedName = typeof name === 'string' ? name.trim() : '';
-      const trimmedEmail = typeof email === 'string' ? email.trim().toLowerCase() : '';
+      // Canonical form, then validate: a stray space from a keyboard or a paste
+      // must not turn into a 422 the driver cannot act on.
+      const trimmedEmail = normalizeEmail(typeof email === 'string' ? email : '');
       const plainPassword = typeof password === 'string' ? password : '';
 
       if (trimmedName.length < 2) {
         return res.status(422).json({ error: 'name must be at least 2 characters' });
       }
-      if (!EMAIL_RE.test(trimmedEmail)) {
+      if (!isValidEmail(trimmedEmail)) {
         return res.status(422).json({ error: 'enter a valid e-mail address' });
       }
       if (plainPassword.length < 8) {

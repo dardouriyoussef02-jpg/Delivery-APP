@@ -27,15 +27,32 @@ export function openDatabase({ path = ':memory:' } = {}) {
 
 /**
  * Seeds the demo dataset on an empty database so a fresh install still shows
- * the reference route. A database that already has rows is left untouched -
- * demo seeding is development data, production data comes from
- * EXISTING_API_BASE_URL.
+ * the reference route, and tops up one that was written by an older build.
+ *
+ * The demo route grew from a four-stop route owned by DRV-77 into a
+ * thirty-stop open pool, so a table that still holds only the old rows would
+ * leave the dispatch board permanently short: every stop the current build
+ * expects is simply missing, and there is nothing for a signer to claim.
+ * Missing demo rows are therefore inserted, while rows that already exist are
+ * never rewritten - their status, history and owner are live data.
+ *
+ * A table holding anything that is *not* a demo stop is somebody else's route
+ * and is left completely alone; real delivery data comes from
+ * EXISTING_API_BASE_URL and must never be mixed with demo work.
+ *
+ * Returns true when at least one row was inserted.
  */
 export function seedDemoDeliveries(db) {
-  const existing = db.prepare('SELECT COUNT(*) AS n FROM deliveries').get();
-  if (Number(existing?.n ?? 0) > 0) return false;
+  const demoIds = demoDeliveries.map((demo) => demo.id);
+  const placeholders = demoIds.map(() => '?').join(', ');
+  const foreign = db
+    .prepare(`SELECT 1 FROM deliveries WHERE id NOT IN (${placeholders}) LIMIT 1`)
+    .all(...demoIds);
+  if (foreign.length > 0) return false;
 
   const now = new Date().toISOString();
+  const present = db.prepare('SELECT 1 FROM deliveries WHERE id = ?');
+  let inserted = 0;
 
   // The demo route is an open pool: every stop starts unassigned, exactly like
   // work sitting on the dispatch board. Stops only gain an owner when a driver
@@ -68,6 +85,10 @@ export function seedDemoDeliveries(db) {
     `);
 
     for (const demo of demoDeliveries) {
+      // Already in the database: its state, owner and history are live, so it
+      // is left exactly as it is rather than reset to the demo values.
+      if (present.get(demo.id)) continue;
+
       const customer = demo.customer;
       upsertCustomer.run(
         customer.id,
@@ -102,12 +123,13 @@ export function seedDemoDeliveries(db) {
         now,
         now,
       );
+      inserted += 1;
     }
   } finally {
     db.exec('PRAGMA foreign_keys = ON');
   }
 
-  return true;
+  return inserted > 0;
 }
 
 /**

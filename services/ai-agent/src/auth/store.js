@@ -19,7 +19,9 @@
  * @property {() => Promise<number>} purgeExpiredSessions
  */
 
-const normalise = (email) => String(email ?? '').trim().toLowerCase();
+import { normalizeEmail } from './email.js';
+
+const normalise = normalizeEmail;
 
 /** Process-local auth store: users + sessions kept in Maps. */
 export function createMemoryAuthStore() {
